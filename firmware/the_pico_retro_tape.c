@@ -160,7 +160,7 @@ void send_test()
 
     // send 192 bytes data
     uint8_t checksum = 0;
-    for(int i=0; i<sizeof(header); i++)
+    for(int i=0; i < (int)sizeof(header); i++)
     {
         checksum ^= buffer[i];
         send_byte(buffer[i]);
@@ -190,7 +190,7 @@ void send_test()
 
     // send 192 bytes data
     checksum = 0;
-    for(int i=0; i<sizeof(header); i++)
+    for(int i=0; i < (int)sizeof(header); i++)
     {
         checksum ^= buffer[i];
         send_byte(buffer[i]);
@@ -231,13 +231,14 @@ void send_tap_image()
     int pulse;
     uint32_t cycles;
 
-    for(int i=0; i<sizeof(TAPE_DATA); i++)
+    for(int i=0; i < (int)sizeof(TAPE_DATA); i++)
     {
          cycles = TAPE_DATA[counter] << 3;
 
         if(cycles != 0)
         {
-            pulse = cycles * 0.5182846f; 
+            //pulse = cycles * 0.5182846f; 
+            pulse = cycles >> 1;
             counter++;
         }
         else 
@@ -249,7 +250,8 @@ void send_tap_image()
             tmp[0] = TAPE_DATA[counter + 1];
             tmp[1] = TAPE_DATA[counter + 2];
             tmp[2] = TAPE_DATA[counter + 3];
-            pulse = cycles * 0.5182846f;
+            //pulse = cycles * 0.5182846f;
+            pulse = cycles >> 1;
             counter += 4;
         }
 
@@ -260,7 +262,7 @@ void send_tap_image()
     }
 }
 
-int32_t get_next_tap__us_pulse(const uint8_t *tap_image, uint32_t *tap_image_pos_1)
+int32_t get_next_tap__us_pulse(const uint8_t *tap_image)
 {
         uint32_t cycles = tap_image[tap_image_pos];
         uint32_t pulse;
@@ -364,7 +366,7 @@ int main()
 
                     for(int i=128; i<256; i+=2)
                     {
-                        int32_t pulse = get_next_tap__us_pulse(TAPE_DATA, &tap_image_pos);
+                        int32_t pulse = get_next_tap__us_pulse(TAPE_DATA);
                         if(tap_image_pos >= sizeof(TAPE_DATA))
                         {
                             tap_image_is_end = true;
@@ -386,7 +388,7 @@ int main()
 
                     for(int i=0; i<128; i+=2)
                     {
-                        int32_t pulse = get_next_tap__us_pulse(TAPE_DATA, &tap_image_pos);
+                        int32_t pulse = get_next_tap__us_pulse(TAPE_DATA);
                         if(tap_image_pos >= sizeof(TAPE_DATA))
                         {
                             tap_image_is_end = true;

@@ -6,6 +6,10 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# find pedantic warnings
+# add_compile_options(-O2 -Wall -Wextra -Werror -pedantic)
+add_compile_options(-O2 -Wall -Wextra -Werror)
+
 # Initialise pico_sdk from installed location
 # (note this can come from environment, CMake cache etc)
 
