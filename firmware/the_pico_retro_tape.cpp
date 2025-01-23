@@ -43,31 +43,13 @@ int main()
 
     gpio_put(C1530_TAPE_SENSE_GPIO, true);
 
-    bool c64_motor_new_state = false;
-    bool c64_motor_old_state = false;
-
     while (true) 
     {
         CheckKeys();
 
         // sendbuffer fill with new data
         if(!c1530.is_tap_end())
-            c1530.fill_send_buffer();
-
-        // motor state
-        c64_motor_new_state = gpio_get(C1530_TAPE_MOTOR_GPIO);
-        if(c64_motor_new_state == true && c64_motor_old_state == false)
-        {
-            // motor on
-            printf("Motor is on.\n");
-        }
-
-        if(c64_motor_new_state == false && c64_motor_old_state == true)
-        {
-            // motor off
-            printf("Motor is off.\n");
-        }
-        c64_motor_old_state = c64_motor_new_state;
+            c1530.update();
     }
 }
 

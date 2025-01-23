@@ -31,15 +31,11 @@ struct C64_HEADER
 class C1530Class
 {
 public:
+    C1530Class();
     void init_gpios(int read_gpio, int write_gpio, int sense_gpio, int motor_gpio);
-    void fill_send_buffer();
+    void update();
     void read_start();
-
     bool is_tap_end();
-
-    void sync_10sek();
-    void send_byte(uint8_t byte);
-    void send_test();
 
     int read_gpio;
     int write_gpio;
@@ -54,10 +50,18 @@ public:
 
 private:
     int32_t get_next_tap_us_pulse();
+    void fill_send_buffer();
+
+    void sync_10sek();
+    void send_byte(uint8_t byte);
+    void send_test();
 
     bool buffer0_is_ready;
     bool buffer1_is_ready;
     bool tap_image_is_end;
+
+    bool c64_motor_new_state;
+    bool c64_motor_old_state;
 };
 
 

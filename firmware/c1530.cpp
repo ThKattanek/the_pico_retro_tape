@@ -31,6 +31,12 @@ bool timer_callback_send_data(__unused struct repeating_timer *t)
     return true;
 }
 
+C1530Class::C1530Class()
+{
+    c64_motor_new_state = false;
+    c64_motor_old_state = false;
+}
+
 void C1530Class::init_gpios(int read_gpio, int write_gpio, int sense_gpio, int motor_gpio)
 {
     // read_gpio is for transfer from here to c64                   OUTPUT
@@ -56,6 +62,26 @@ void C1530Class::init_gpios(int read_gpio, int write_gpio, int sense_gpio, int m
     this->write_gpio = write_gpio;
     this->sense_gpio = sense_gpio;
     this->motor_gpio = motor_gpio;
+}
+
+void C1530Class::update()
+{
+    fill_send_buffer();
+
+    // motor state
+    c64_motor_new_state = gpio_get(motor_gpio);
+    if(c64_motor_new_state == true && c64_motor_old_state == false)
+    {
+        // motor on
+        printf("Motor is on.\n");
+    }
+
+    if(c64_motor_new_state == false && c64_motor_old_state == true)
+    {
+        // motor off
+        printf("Motor is off.\n");
+    }
+    c64_motor_old_state = c64_motor_new_state;
 }
 
 void C1530Class::read_start()
@@ -237,7 +263,6 @@ void C1530Class::send_byte(uint8_t byte)
         sleep_us(MEDIUM_PULSE);
         gpio_put(read_gpio, true);
         sleep_us(MEDIUM_PULSE);
-
     }
 }
 
