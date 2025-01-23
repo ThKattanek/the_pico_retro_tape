@@ -46,6 +46,7 @@ public:
     int32_t send_buffer[256];
     uint8_t send_buffer_read_pos;  
 
+    bool motor_state;
     uint32_t tap_image_pos;
 
 private:
@@ -60,8 +61,8 @@ private:
     bool buffer1_is_ready;
     bool tap_image_is_end;
 
-    bool c64_motor_new_state;
-    bool c64_motor_old_state;
+    bool motor_new_state;
+    bool motor_old_state;
 };
 
 

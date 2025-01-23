@@ -15,26 +15,30 @@
 
 #include "./c1530.h"
 
-//#include "./ggs.h"
-#include "./aargh_tap.h"
+#include "./ggs.h"
+//#include "./aargh_tap.h"
 
 bool timer_callback_send_data(__unused struct repeating_timer *t) 
 {
     C1530Class* c1530 = (C1530Class*)t->user_data;
 
-    if(c1530->send_buffer_read_pos & 1)
-        gpio_put(c1530->read_gpio, true);
-    else    
-        gpio_put(c1530->read_gpio, false);
+    if(c1530->motor_state)
+    {
+        if(c1530->send_buffer_read_pos & 1)
+            gpio_put(c1530->read_gpio, true);
+        else    
+            gpio_put(c1530->read_gpio, false);
 
-    c1530->timer.delay_us = c1530->send_buffer[c1530->send_buffer_read_pos++];    
+        c1530->timer.delay_us = c1530->send_buffer[c1530->send_buffer_read_pos++];    
+    }
+
     return true;
 }
 
 C1530Class::C1530Class()
 {
-    c64_motor_new_state = false;
-    c64_motor_old_state = false;
+    motor_new_state = false;
+    motor_old_state = false;
 }
 
 void C1530Class::init_gpios(int read_gpio, int write_gpio, int sense_gpio, int motor_gpio)
@@ -69,19 +73,17 @@ void C1530Class::update()
     fill_send_buffer();
 
     // motor state
-    c64_motor_new_state = gpio_get(motor_gpio);
-    if(c64_motor_new_state == true && c64_motor_old_state == false)
+    motor_new_state = gpio_get(motor_gpio);
+    if(motor_new_state == true && motor_old_state == false)
     {
-        // motor on
-        printf("Motor is on.\n");
+        motor_state = true;
     }
 
-    if(c64_motor_new_state == false && c64_motor_old_state == true)
+    if(motor_new_state == false && motor_old_state == true)
     {
-        // motor off
-        printf("Motor is off.\n");
+        motor_state = false;
     }
-    c64_motor_old_state = c64_motor_new_state;
+    motor_old_state = motor_new_state;
 }
 
 void C1530Class::read_start()
