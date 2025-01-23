@@ -1,0 +1,11 @@
+C64 TAP einbinden das es 100% aus dem Speicher läuft        []
+    - Motor Steuerung                                       []
+C64 PRG senden, also alle Banddaten müssen erzeugt werden   []
+C64 T64 senden (ähnlich PRG)                                []
+D64 untersützen um einzelne Daten zu senden                 []
+OLED anbinden                                               []
+SDKART anbinden                                             []
+1530 Recod ins TAP Format                                   []
+.
+.
+.
