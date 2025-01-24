@@ -13,10 +13,23 @@
 #include <stdio.h>
 #include <pico/stdlib.h>
 #include <hardware/timer.h>
+#include "sd_card.h"
+#include "ff.h"
 
+// SD Card
+char buf[100];
+char filename[] = "test02.txt";
+
+FRESULT fr;
+FATFS fs;
+FIL fil;
+int ret;
+
+bool    sd_card_is_ready;
+
+// Keys
 #define KEY_WAIT 10000          // Tasten Entprellen
-
-#define PLAY_BUTTON_GPIO        16
+#define PLAY_BUTTON_GPIO        20
 
 ///// for commodore datasette 1530 support
 
@@ -28,11 +41,13 @@
 #include "./c1530.h"
 C1530Class c1530;
 
+
 void CheckKeys();
+int InitSDCard();
 
 int main()
 {
-    stdio_init_all();
+     stdio_init_all();
 
     //  PlayButton is Input an set pull down
     gpio_init(PLAY_BUTTON_GPIO);
@@ -40,8 +55,12 @@ int main()
     gpio_set_pulls(PLAY_BUTTON_GPIO, false, true);
 
     c1530.init_gpios(C1530_TAPE_READ_GPIO, C1530_TAPE_WRITE_GPIO, C1530_TAPE_SENSE_GPIO, C1530_TAPE_MOTOR_GPIO);
-
     gpio_put(C1530_TAPE_SENSE_GPIO, true);
+
+    if(InitSDCard() == 0)
+        sd_card_is_ready = true;
+    else
+        sd_card_is_ready = false;
 
     while (true) 
     {
@@ -74,4 +93,26 @@ void CheckKeys()
     }
 
     key_wait_counter++;
+}
+
+int InitSDCard()
+{
+    printf("Init SD Card\r\n");
+
+    // Initialize SD card
+    if(!sd_init_driver())
+    {
+        printf("\rERROR: Could not initialize SD card\r\n");
+        return -1;
+    }
+
+    // Mount drive
+    fr = f_mount(&fs, "0:", 1);
+    if(fr != FR_OK)
+    {
+        printf("ERROR: Could not mount filesystem (%d)\r\n", fr);
+        return -2;
+    }
+
+    return 0;
 }

@@ -8,7 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # find pedantic warnings
 # add_compile_options(-O2 -Wall -Wextra -Werror -pedantic)
-add_compile_options(-O2 -Wall -Wextra -Werror)
+# add_compile_options(-O2 -Wall -Wextra -Werror)
 
 # Initialise pico_sdk from installed location
 # (note this can come from environment, CMake cache etc)
@@ -42,7 +42,11 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(${PROJECT_NAME} the_pico_retro_tape.cpp c1530.cpp)
+add_executable(${PROJECT_NAME} 
+    the_pico_retro_tape.cpp
+    hw_config.c 
+    c1530.cpp 
+)
 
 pico_set_program_name(${PROJECT_NAME} "ThePicoRetroTape")
 pico_set_program_version(${PROJECT_NAME} "0.1")
@@ -51,9 +55,14 @@ pico_set_program_version(${PROJECT_NAME} "0.1")
 pico_enable_stdio_uart(${PROJECT_NAME} 1)
 pico_enable_stdio_usb(${PROJECT_NAME} 0)
 
+# Tell CMake where to find other source code
+add_subdirectory(FatFs_SPI build)
+
 # Add the standard library to the build
 target_link_libraries(${PROJECT_NAME}
-        pico_stdlib)
+        pico_stdlib
+        FatFs_SPI
+)
 
 # Add the standard include files to the build
 target_include_directories(${PROJECT_NAME} PRIVATE
