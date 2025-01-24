@@ -12,12 +12,15 @@
 
 #include <stdio.h>
 #include <pico/stdlib.h>
+#include "sd_card.h"
+#include "ff.h"
 
 #include "./c1530.h"
 
-//#include "./ggs.h"
-//#include "./aargh_tap.h"
-#include "./goonies.h"
+//#include "tap_images/ggs.h"           // the great giana sisters
+//#include "tap_images/aargh_tap.h"     // aargh!
+//#include "tap_images/goonies.h"       // the goonies
+#include "tap_images/hoh.h"             // head over heels
 
 bool timer_callback_send_data(__unused struct repeating_timer *t) 
 {
