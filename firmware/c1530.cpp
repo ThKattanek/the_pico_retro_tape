@@ -14,25 +14,15 @@
 #include <pico/stdlib.h>
 #include "sd_card.h"
 #include "ff.h"
-
 #include "./c1530.h"
-
-//#include "tap_images/ggs.h"           // the great giana sisters
-//#include "tap_images/aargh_tap.h"     // aargh!
-//#include "tap_images/goonies.h"       // the goonies
-#include "tap_images/hoh.h"             // head over heels
 
 bool timer_callback_send_data(__unused struct repeating_timer *t) 
 {
-    C1530Class* c1530 = (C1530Class*)t->user_data;
+    C1530Class* c1530 = static_cast<C1530Class*>(t->user_data);
 
-    if(c1530->motor_state)
+    if (c1530->motor_state)
     {
-        if(c1530->send_buffer_read_pos & 1)
-            gpio_put(c1530->read_gpio, true);
-        else    
-            gpio_put(c1530->read_gpio, false);
-
+        gpio_put(c1530->read_gpio, c1530->send_buffer_read_pos & 1);
         c1530->timer.delay_us = c1530->send_buffer[c1530->send_buffer_read_pos++];    
     }
 
@@ -40,9 +30,13 @@ bool timer_callback_send_data(__unused struct repeating_timer *t)
 }
 
 C1530Class::C1530Class()
+    : read_gpio(-1), write_gpio(-1), sense_gpio(-1), motor_gpio(-1),
+      send_buffer_read_pos(0), motor_state(false), tap_image_pos(0),
+      buffer0_is_ready(false), buffer1_is_ready(false), tap_image_is_end(false),
+      motor_new_state(false), motor_old_state(false), is_tape_insert(false)
 {
-    motor_new_state = false;
-    motor_old_state = false;
+    for(int i=0; i<256; i++)
+        send_buffer[i] = -100;
 }
 
 void C1530Class::init_gpios(int read_gpio, int write_gpio, int sense_gpio, int motor_gpio)
@@ -72,9 +66,63 @@ void C1530Class::init_gpios(int read_gpio, int write_gpio, int sense_gpio, int m
     this->motor_gpio = motor_gpio;
 }
 
+bool C1530Class::open_image(char* filename)
+{
+    if(filename == nullptr)
+        return false;
+
+    return true;
+}
+
+bool C1530Class::open_image(const uint8_t* image_buffer, int image_buffer_size, IMAGE_TYPE type)
+{
+    if(image_buffer == nullptr)
+        return false;
+
+    switch (type)
+    {
+    case IMAGE_TYPE::TAP:
+        tap_data_buffer = image_buffer;
+        tap_data_buffer_size = image_buffer_size;
+        image_source = IMAGE_SOURCE::MEMORY;
+        image_type = type;
+        is_tape_insert = true;
+        break;
+    
+    default:
+        return false;
+        break;
+    }
+    
+    return true;
+}
+
+void C1530Class::close_image()
+{
+    is_tape_insert = false;
+    
+    for(int i=0; i<256; i++)
+        send_buffer[i] = -100;
+}
+
 void C1530Class::update()
 {
-    fill_send_buffer();
+    if(!is_tape_insert)
+        return;
+
+    switch (image_source)
+    {
+    case IMAGE_SOURCE::MEMORY:
+        fill_send_buffer();
+        break;
+    
+    case IMAGE_SOURCE::SDCARD:
+        //fill_send_buffer(&file);
+        break;  
+
+    default:
+        break;
+    }
 
     // motor state
     motor_new_state = gpio_get(motor_gpio);
@@ -96,7 +144,7 @@ void C1530Class::read_start()
         send_buffer[i] = -100;
 
     send_buffer_read_pos = 0;
-    tap_image_pos = 0x14;;
+    tap_image_pos = 0x14;
             
     gpio_put(read_gpio, true);
     add_repeating_timer_us(-1000, timer_callback_send_data, this, &timer);
@@ -113,54 +161,74 @@ bool C1530Class::is_tap_end()
 
 void C1530Class::fill_send_buffer()
 {
-        if(send_buffer_read_pos == 0 && !buffer1_is_ready)
+    switch (image_type)
+    {
+    case IMAGE_TYPE::TAP:
+
+    if(send_buffer_read_pos == 0 && !buffer1_is_ready)
+    {
+        // Puffer 1 füllen
+
+        for(int i=128; i<256; i+=2)
         {
-            // Puffer 1 füllen
-
-            for(int i=128; i<256; i+=2)
+            int32_t pulse = get_next_tap_us_pulse();
+            if(tap_image_pos >= tap_data_buffer_size)
             {
-                int32_t pulse = get_next_tap_us_pulse();
-                if(tap_image_pos >= sizeof(TAPE_DATA))
-                {
-                    tap_image_is_end = true;
-                    break;
-                }
-
-                send_buffer[i+0] = pulse;
-                send_buffer[i+1] = pulse;
+                tap_image_is_end = true;
+                break;
             }
 
-            buffer1_is_ready = true;
-            buffer0_is_ready = false;
-            sleep_us(1);
+            send_buffer[i+0] = pulse;
+            send_buffer[i+1] = pulse;
         }
 
-        if(send_buffer_read_pos == 128 && !buffer0_is_ready)
+        buffer1_is_ready = true;
+        buffer0_is_ready = false;
+        sleep_us(1);
+    }
+
+    if(send_buffer_read_pos == 128 && !buffer0_is_ready)
+    {
+        // Puffer 0 füllen
+
+        for(int i=0; i<128; i+=2)
         {
-            // Puffer 0 füllen
-
-            for(int i=0; i<128; i+=2)
+            int32_t pulse = get_next_tap_us_pulse();
+            if(tap_image_pos >= tap_data_buffer_size)
             {
-                int32_t pulse = get_next_tap_us_pulse();
-                if(tap_image_pos >= sizeof(TAPE_DATA))
-                {
-                    tap_image_is_end = true;
-                    break;
-                }
-
-                send_buffer[i+0] = pulse;
-                send_buffer[i+1] = pulse;
+                tap_image_is_end = true;
+                break;
             }
 
-            buffer0_is_ready = true;
-            buffer1_is_ready = false;
-            sleep_us(1);
+            send_buffer[i+0] = pulse;
+            send_buffer[i+1] = pulse;
         }
+
+        buffer0_is_ready = true;
+        buffer1_is_ready = false;
+        sleep_us(1);
+    }
+        break;
+    
+    case IMAGE_TYPE::PRG:
+        break;
+
+    case IMAGE_TYPE::T64:
+        break;
+
+
+    default:
+        break;
+    }
+}
+
+void C1530Class::fill_send_buffer(FIL* file)
+{
 }
 
 int32_t C1530Class::get_next_tap_us_pulse()
 {
-        uint32_t cycles = TAPE_DATA[tap_image_pos];
+        uint32_t cycles = tap_data_buffer[tap_image_pos];
         uint32_t pulse;
 
         if(cycles != 0)
@@ -174,9 +242,9 @@ int32_t C1530Class::get_next_tap_us_pulse()
             // Wenn 0 dann die nächsten 3Bytes in unsigned int (32Bit) wandeln
             // Mit Hilfe eines Zeigers auf cycles
             unsigned char *tmp = (unsigned char*) & cycles;
-            tmp[0] = TAPE_DATA[tap_image_pos + 1];
-            tmp[1] = TAPE_DATA[tap_image_pos + 2];
-            tmp[2] = TAPE_DATA[tap_image_pos + 3];
+            tmp[0] = tap_data_buffer[tap_image_pos + 1];
+            tmp[1] = tap_data_buffer[tap_image_pos + 2];
+            tmp[2] = tap_data_buffer[tap_image_pos + 3];
             //pulse = cycles * 0.50748644f;
             pulse = cycles >> 1;
             tap_image_pos += 4;

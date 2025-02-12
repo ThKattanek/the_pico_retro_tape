@@ -16,9 +16,14 @@
 #include "sd_card.h"
 #include "ff.h"
 
+//#include "tap_images/ggs.h"           // the great giana sisters
+//#include "tap_images/aargh_tap.h"     // aargh!
+#include "tap_images/goonies.h"       // the goonies
+//#include "tap_images/hoh.h"             // head over heels
+
 // SD Card
 char buf[100];
-char filename[] = "test02.txt";
+char filename[] = "/c64_tap/hoh.tap";
 
 FRESULT fr;
 FATFS fs;
@@ -44,9 +49,13 @@ C1530Class c1530;
 
 void CheckKeys();
 int InitSDCard();
+void ReleaseSDCard();
+void ListDir(const TCHAR* path);
 
 int main()
 {
+    FIL file;
+
      stdio_init_all();
 
     //  PlayButton is Input an set pull down
@@ -61,6 +70,28 @@ int main()
         sd_card_is_ready = true;
     else
         sd_card_is_ready = false;
+
+    ListDir("/c64_tap");
+
+    // Open a tap image with the c1530 class and print corresponding message
+    if (c1530.open_image(TAPE_DATA, sizeof(TAPE_DATA), TAP)) {
+        printf("Successfully opened 1530 image \"%s\"\n", filename);
+    } else {
+        printf("Failed to open 1530 image \"%s\"\n", filename);
+    }
+
+    /*
+    fr = f_open(&file, filename, FA_READ);
+    if(fr == FR_OK)
+    {
+        printf("File - \"%s\" is open.", filename);
+        f_close(&file);
+    }
+    else
+    {
+        printf("Failed to open \"%s\"", filename);
+    }
+    */
 
     while (true) 
     {
@@ -97,7 +128,7 @@ void CheckKeys()
 
 int InitSDCard()
 {
-    printf("Init SD Card\r\n");
+    printf("Init SD Card...");
 
     // Initialize SD card
     if(!sd_init_driver())
@@ -107,12 +138,60 @@ int InitSDCard()
     }
 
     // Mount drive
-    fr = f_mount(&fs, "0:", 1);
+    fr = f_mount(&fs, "", 1);
     if(fr != FR_OK)
     {
         printf("ERROR: Could not mount filesystem (%d)\r\n", fr);
         return -2;
     }
 
+    printf("OK\r\n");
+
     return 0;
+}
+
+void ReleaseSDCard()
+{
+    printf("Release SD Card\r\n");
+    f_unmount("");
+}
+
+void ListDir(const TCHAR* path)
+{
+    FRESULT res;
+    DIR dir;
+    FILINFO fno;
+    int nfile, ndir;
+
+    printf("List all directory items [%s]\r\n", path);
+
+    res = f_opendir(&dir, path);
+    if(res == FR_OK)
+    {   
+        nfile = ndir = 0;
+        for(;;)
+        {
+            res = f_readdir(&dir, &fno);
+            if(res != FR_OK || fno.fname[0] == 0) break;
+            if(fno.fattrib & AM_DIR)
+            {
+                // Directory
+                printf("<DIR>  %s\n", fno.fname);
+                ndir++;
+            }
+            else
+            {
+                // File
+                printf("%s\n", fno.fsize, fno.fname);
+                nfile++;
+            }
+        }
+
+        f_closedir(&dir);
+        printf("\r\n%d dirs, %d files.\r\n", ndir, nfile);
+    }   
+    else
+    {
+        printf("Failed to open \"%s\"\r\n", path);
+    }
 }
