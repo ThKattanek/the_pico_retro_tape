@@ -31,6 +31,12 @@ struct C64_HEADER
     uint8_t Filename2[171]; // not displayed in the FOUND message
 };
 
+struct TAPHeader {
+    char     magic_id[12];    // "C64-TAPE-RAW"
+    uint32_t version;      // 0x01000000
+    uint32_t data_length;  // Length of following tape data
+}__attribute__((packed));
+
 class C1530Class
 {
 public:
@@ -66,8 +72,9 @@ public:
 
 private:
     int32_t get_next_tap_us_pulse();
-    void fill_send_buffer();
-    void fill_send_buffer(FIL* file);
+    int32_t get_next_tap_us_pulse_from_file();
+    void fill_send_buffer_from_memory();
+    void fill_send_buffer_from_file();
 
     void sync_10sek();
     void send_byte(uint8_t byte);
@@ -86,6 +93,9 @@ private:
     int image_source;
     int image_type;
     bool is_tape_insert;
+
+    FIL file;
+    TAPHeader tap_header;
 };
 
 

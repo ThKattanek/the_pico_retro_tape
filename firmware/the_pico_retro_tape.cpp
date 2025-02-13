@@ -25,9 +25,7 @@
 char buf[100];
 char filename[] = "/c64_tap/hoh.tap";
 
-FRESULT fr;
 FATFS fs;
-FIL fil;
 int ret;
 
 bool    sd_card_is_ready;
@@ -56,7 +54,7 @@ int main()
 {
     FIL file;
 
-     stdio_init_all();
+    stdio_init_all();
 
     //  PlayButton is Input an set pull down
     gpio_init(PLAY_BUTTON_GPIO);
@@ -74,24 +72,11 @@ int main()
     ListDir("/c64_tap");
 
     // Open a tap image with the c1530 class and print corresponding message
-    if (c1530.open_image(TAPE_DATA, sizeof(TAPE_DATA), TAP)) {
+    if (c1530.open_image(filename)) {
         printf("Successfully opened 1530 image \"%s\"\n", filename);
     } else {
         printf("Failed to open 1530 image \"%s\"\n", filename);
     }
-
-    /*
-    fr = f_open(&file, filename, FA_READ);
-    if(fr == FR_OK)
-    {
-        printf("File - \"%s\" is open.", filename);
-        f_close(&file);
-    }
-    else
-    {
-        printf("Failed to open \"%s\"", filename);
-    }
-    */
 
     while (true) 
     {
@@ -128,6 +113,8 @@ void CheckKeys()
 
 int InitSDCard()
 {
+    FRESULT fr;
+
     printf("Init SD Card...");
 
     // Initialize SD card

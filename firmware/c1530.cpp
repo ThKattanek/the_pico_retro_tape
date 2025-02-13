@@ -15,6 +15,7 @@
 #include "sd_card.h"
 #include "ff.h"
 #include "./c1530.h"
+#include <string.h>
 
 bool timer_callback_send_data(__unused struct repeating_timer *t) 
 {
@@ -68,8 +69,43 @@ void C1530Class::init_gpios(int read_gpio, int write_gpio, int sense_gpio, int m
 
 bool C1530Class::open_image(char* filename)
 {
+    FRESULT fr;
+    UINT read_bytes;
+
     if(filename == nullptr)
         return false;
+
+    fr = f_open(&file, filename, FA_READ);
+    if(fr == FR_OK)
+    {
+        // prüfen ob es sich um ein TAP-File handelt
+        fr = f_read(&file, &tap_header, sizeof(TAPHeader), &read_bytes);
+        if(fr != FR_OK && read_bytes != sizeof(TAPHeader))
+        {
+            printf("Error reading TAP-Header\n");
+            f_close(&file);
+            return false;
+        }
+        else
+        {
+            if(0 != strncmp(tap_header.magic_id, "C64-TAPE-RAW", 12))
+            {
+                printf("Error: Not a TAP-File\n");
+                f_close(&file);
+                return false;
+            }
+            else
+            {
+                image_source = IMAGE_SOURCE::SDCARD;
+                image_type = IMAGE_TYPE::TAP;
+                is_tape_insert = true;
+            }
+        }
+    }
+    else
+    {
+        return false;
+    }
 
     return true;
 }
@@ -103,6 +139,9 @@ void C1530Class::close_image()
     
     for(int i=0; i<256; i++)
         send_buffer[i] = -100;
+
+    if(image_source == IMAGE_SOURCE::SDCARD)
+        f_close(&file);
 }
 
 void C1530Class::update()
@@ -113,11 +152,11 @@ void C1530Class::update()
     switch (image_source)
     {
     case IMAGE_SOURCE::MEMORY:
-        fill_send_buffer();
+        fill_send_buffer_from_memory();
         break;
     
     case IMAGE_SOURCE::SDCARD:
-        //fill_send_buffer(&file);
+        fill_send_buffer_from_file();
         break;  
 
     default:
@@ -144,7 +183,13 @@ void C1530Class::read_start()
         send_buffer[i] = -100;
 
     send_buffer_read_pos = 0;
-    tap_image_pos = 0x14;
+
+    if(image_source == IMAGE_SOURCE::SDCARD)
+    {
+        tap_image_pos = 0;
+    }
+    else
+        tap_image_pos = 0x14;
             
     gpio_put(read_gpio, true);
     add_repeating_timer_us(-1000, timer_callback_send_data, this, &timer);
@@ -159,7 +204,7 @@ bool C1530Class::is_tap_end()
     return tap_image_is_end;
 }
 
-void C1530Class::fill_send_buffer()
+void C1530Class::fill_send_buffer_from_memory()
 {
     switch (image_type)
     {
@@ -222,8 +267,93 @@ void C1530Class::fill_send_buffer()
     }
 }
 
-void C1530Class::fill_send_buffer(FIL* file)
+void C1530Class::fill_send_buffer_from_file()
 {
+    switch (image_type)
+    {
+    case IMAGE_TYPE::TAP:
+
+    if(send_buffer_read_pos == 0 && !buffer1_is_ready)
+    {
+        // Puffer 1 füllen
+
+        for(int i=128; i<256; i+=2)
+        {
+            int32_t pulse = get_next_tap_us_pulse_from_file();
+            if(tap_image_pos >= tap_header.data_length)
+            {
+                tap_image_is_end = true;
+                break;
+            }
+
+            send_buffer[i+0] = pulse;
+            send_buffer[i+1] = pulse;
+        }
+
+        buffer1_is_ready = true;
+        buffer0_is_ready = false;
+        sleep_us(1);
+    }
+
+    if(send_buffer_read_pos == 128 && !buffer0_is_ready)
+    {
+        // Puffer 0 füllen
+
+        for(int i=0; i<128; i+=2)
+        {
+            int32_t pulse = get_next_tap_us_pulse_from_file();
+            if(tap_image_pos >= tap_header.data_length)
+            {
+                tap_image_is_end = true;
+                break;
+            }
+
+            send_buffer[i+0] = pulse;
+            send_buffer[i+1] = pulse;
+        }
+
+        buffer0_is_ready = true;
+        buffer1_is_ready = false;
+        sleep_us(1);
+    }
+        break;
+    
+    case IMAGE_TYPE::PRG:
+        break;
+
+    case IMAGE_TYPE::T64:
+        break;
+
+    default:
+        break;
+    }
+}
+
+int32_t C1530Class::get_next_tap_us_pulse_from_file()
+{
+    uint32_t cycles;
+    uint32_t pulse;
+    UINT read_bytes;
+
+    uint8_t read_byte;
+
+    f_read(&file, &read_byte, 1, &read_bytes);
+    cycles = read_byte;
+    if(cycles != 0)
+    {
+        pulse = cycles << 2;
+        tap_image_pos++;
+    }
+    else 
+    {
+        unsigned char tmp[3];
+        f_read(&file, tmp, 3, &read_bytes);
+        cycles = (tmp[2] << 16) | (tmp[1] << 8) | tmp[0];
+        pulse = cycles >> 1;
+        tap_image_pos += 4;
+    }
+
+    return pulse * -1;
 }
 
 int32_t C1530Class::get_next_tap_us_pulse()
