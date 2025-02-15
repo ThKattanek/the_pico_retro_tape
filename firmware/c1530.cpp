@@ -16,6 +16,7 @@
 #include "ff.h"
 #include "./c1530.h"
 #include <string.h>
+#include <time.h>
 
 bool timer_callback_send_data(__unused struct repeating_timer *t) 
 {
@@ -202,6 +203,47 @@ void C1530Class::read_start()
 bool C1530Class::is_tap_end()
 {
     return tap_image_is_end;
+}
+
+double C1530Class::calculate_tap_runtime()
+{
+    clock_t start_time = clock(); // Startzeit erfassen
+
+    uint32_t total_cycles = 0;
+    uint32_t cycles;
+    UINT read_bytes;
+    uint8_t read_byte;
+
+    if(image_source != IMAGE_SOURCE::SDCARD && is_tape_insert == false)
+        return 0;
+
+    // Set file position to the start of the tape data
+    f_lseek(&file, 0x14);
+
+    while(f_read(&file, &read_byte, 1, &read_bytes) == FR_OK && read_bytes == 1)
+    {
+        cycles = read_byte;
+        if(cycles == 0)
+        {
+            unsigned char tmp[3];
+            f_read(&file, tmp, 3, &read_bytes);
+            cycles = ((tmp[2] << 16) | (tmp[1] << 8) | tmp[0]);
+        }
+        total_cycles += cycles << 3;
+    }
+
+        // Set file position to the start of the tape data
+        f_lseek(&file, 0x14);
+
+    // Convert cycles to seconds (PAL system: 985248 Hz)
+    double runtime_seconds = total_cycles / 985248.0;
+
+    clock_t end_time = clock(); // Endzeit erfassen
+    double elapsed_time = double(end_time - start_time) / CLOCKS_PER_SEC; // Berechnungszeit in Sekunden
+
+    printf("Berechnungszeit: %.2f Sekunden\n", elapsed_time); // Berechnungszeit ausgeben
+
+    return runtime_seconds;
 }
 
 void C1530Class::fill_send_buffer_from_memory()
@@ -560,3 +602,4 @@ void C1530Class::send_test()
         sleep_us(SHORT_PULSE);
     }
 }
+

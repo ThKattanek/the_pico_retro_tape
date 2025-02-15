@@ -54,9 +54,25 @@ public:
      * @return true if the image was successfully opened, false otherwise.
      */
     bool open_image(const uint8_t* image_buffer, int image_buffer_size, IMAGE_TYPE type);  // from memory
+    
+    /**
+     * @brief Closes the currently open image file.
+     *
+     * This function is responsible for closing the image file that is currently open.
+     * It ensures that all resources associated with the file are properly released.
+     */
     void close_image();
+    
+    /**
+     * @brief Initiates the read process.
+     *
+     * This function starts the process of reading data from the device.
+     * It sets up necessary configurations and prepares the system for
+     * data acquisition.
+     */
     void read_start();
     bool is_tap_end();
+    double calculate_tap_runtime();
 
     int read_gpio;
     int write_gpio;

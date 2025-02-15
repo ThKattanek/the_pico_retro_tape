@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <pico/stdlib.h>
 #include <hardware/timer.h>
+#include <hardware/clocks.h>
 #include "sd_card.h"
 #include "ff.h"
 
@@ -52,9 +53,17 @@ void ListDir(const TCHAR* path);
 
 int main()
 {
+        // Set system clock to 250 MHz
+        set_sys_clock_khz(200000, true);
+
     FIL file;
 
     stdio_init_all();
+
+        // Überprüfen Sie die tatsächliche Taktfrequenz
+        uint32_t freq = clock_get_hz(clk_sys);
+        printf("System clock set to %u Hz\n", freq);
+
 
     //  PlayButton is Input an set pull down
     gpio_init(PLAY_BUTTON_GPIO);
