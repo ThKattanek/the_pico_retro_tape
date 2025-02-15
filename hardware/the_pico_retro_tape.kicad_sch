@@ -2039,10 +2039,6 @@
 		(at 195.58 123.19)
 		(uuid "0439d70c-5645-47db-9a07-ab11bd9079b0")
 	)
-	(no_connect
-		(at 217.17 57.15)
-		(uuid "1233897f-5721-47a8-b8ac-384e2cb82827")
-	)
 	(wire
 		(pts
 			(xy 229.87 114.3) (xy 229.87 123.19)
@@ -2483,6 +2479,16 @@
 		)
 		(uuid "fc1d428a-f127-43a8-9636-24dfd4ba2396")
 	)
+	(wire
+		(pts
+			(xy 213.36 57.15) (xy 217.17 57.15)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fd384344-6313-47d7-b4bd-e7f02c59f2ac")
+	)
 	(text "SD CARD"
 		(exclude_from_sim no)
 		(at 143.256 91.694 90)
@@ -2492,16 +2498,6 @@
 			)
 		)
 		(uuid "b3263b81-9cf2-4fbe-9052-64565e3fcb2d")
-	)
-	(text "Hintergrundbeleuchtung\netwas dunkler"
-		(exclude_from_sim no)
-		(at 253.746 95.25 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "d2159faa-3648-4d90-9714-7605f74daf0d")
 	)
 	(text "C64_MOTOR (6V) wird vom C64 per Transistor geschalten. Das ist eigtl. die\nSpannungsversorgung für den MOTOR der Datasette. Wir nutzen das nur als Digitales\nSignal und müssen es mit einem Spannungsteiler runter bringen auf 3 -3.3V ! "
 		(exclude_from_sim no)
@@ -3487,6 +3483,73 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+5V")
+		(at 213.36 57.15 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "1c7e1d0e-ed0f-4cef-9a34-3ecddd1ebf65")
+		(property "Reference" "#PWR013"
+			(at 217.17 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 209.55 57.1499 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 213.36 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 213.36 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 213.36 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "77097792-d818-4bb6-bf9d-905c189914c4")
+		)
+		(instances
+			(project "the_pico_retro_tape"
+				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
+					(reference "#PWR013")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:+3.3V")
 		(at 133.35 58.42 270)
 		(unit 1)
@@ -3687,71 +3750,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+3.3V")
-		(at 227.33 87.63 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "3fbef07a-3f0c-4b6d-97de-6b8c4c4e9ad7")
-		(property "Reference" "#PWR012"
-			(at 227.33 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3.3V"
-			(at 227.33 81.788 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 227.33 87.63 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 227.33 87.63 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-			(at 227.33 87.63 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "913895e3-cff9-415a-8e28-eb98baec8f27")
-		)
-		(instances
-			(project "the_pico_retro_tape"
-				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
-					(reference "#PWR012")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 153.67 83.82 0)
 		(unit 1)
@@ -3814,6 +3812,71 @@
 			(project ""
 				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
 					(reference "SW?")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+5V")
+		(at 242.57 111.76 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5080f594-cffb-4226-b3cc-b3b98a69066a")
+		(property "Reference" "#PWR012"
+			(at 242.57 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 242.57 106.68 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 242.57 111.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 242.57 111.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 242.57 111.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "713b9e5b-a3cc-482a-97de-a76818c80fd7")
+		)
+		(instances
+			(project "the_pico_retro_tape"
+				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
+					(reference "#PWR012")
 					(unit 1)
 				)
 			)
@@ -3887,71 +3950,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+3.3V")
-		(at 242.57 111.76 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "67a696c2-b6c7-4c3a-8ac2-91e2427c0d41")
-		(property "Reference" "#PWR011"
-			(at 242.57 115.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3.3V"
-			(at 242.57 105.918 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 242.57 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 242.57 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-			(at 242.57 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "0fd6d2d2-3c43-4f61-a139-228782e6882d")
-		)
-		(instances
-			(project "the_pico_retro_tape"
-				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
-					(reference "#PWR011")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:R")
 		(at 227.33 95.25 0)
 		(unit 1)
@@ -3970,7 +3968,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100 - 150"
+		(property "Value" "150"
 			(at 229.87 96.5199 0)
 			(effects
 				(font
@@ -4598,6 +4596,72 @@
 			(project "the_pico_retro_tape"
 				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
 					(reference "#PWR07")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+5V")
+		(at 227.33 87.63 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ee2fd717-e5a5-4fb8-b042-6b4e647a204f")
+		(property "Reference" "#PWR011"
+			(at 227.33 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 227.33 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 227.33 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 227.33 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 227.33 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "dd852e7b-1057-492d-ad99-22df2ee052db")
+		)
+		(instances
+			(project "the_pico_retro_tape"
+				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
+					(reference "#PWR011")
 					(unit 1)
 				)
 			)
