@@ -56,13 +56,14 @@ pico_enable_stdio_uart(${PROJECT_NAME} 1)
 pico_enable_stdio_usb(${PROJECT_NAME} 0)
 
 # Tell CMake where to find other source code
-add_subdirectory(FatFs_SPI build)
+add_subdirectory(FatFs_SPI )
+add_subdirectory(pico_st7735 )
 
 # Add the standard library to the build
 target_link_libraries(${PROJECT_NAME}
         pico_stdlib
         FatFs_SPI
-)
+        pico_st7735)
 
 # Add the standard include files to the build
 target_include_directories(${PROJECT_NAME} PRIVATE

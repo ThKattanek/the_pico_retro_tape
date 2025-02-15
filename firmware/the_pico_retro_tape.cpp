@@ -16,6 +16,7 @@
 #include <hardware/clocks.h>
 #include "sd_card.h"
 #include "ff.h"
+#include "st7735/ST7735_TFT.hpp"
 
 //#include "tap_images/ggs.h"           // the great giana sisters
 //#include "tap_images/aargh_tap.h"     // aargh!
@@ -48,22 +49,23 @@ C1530Class c1530;
 
 void CheckKeys();
 int InitSDCard();
+void InitTFTDisplay(ST7735_TFT *tft);
 void ReleaseSDCard();
 void ListDir(const TCHAR* path);
 
 int main()
 {
-        // Set system clock to 250 MHz
-        set_sys_clock_khz(200000, true);
-
-    FIL file;
-
+    // Set system clock to 200 MHz
+    set_sys_clock_khz(200000, true);
     stdio_init_all();
 
-        // Überprüfen Sie die tatsächliche Taktfrequenz
-        uint32_t freq = clock_get_hz(clk_sys);
-        printf("System clock set to %u Hz\n", freq);
+    // Überprüfen Sie die tatsächliche Taktfrequenz
+    uint32_t freq = clock_get_hz(clk_sys);
+    printf("System clock set to %u Hz\n", freq);
 
+
+    FIL file;
+    ST7735_TFT tft;
 
     //  PlayButton is Input an set pull down
     gpio_init(PLAY_BUTTON_GPIO);
@@ -77,6 +79,19 @@ int main()
         sd_card_is_ready = true;
     else
         sd_card_is_ready = false;
+
+    InitTFTDisplay(&tft);
+
+    tft.TFTFontNum(TFTFont_Default);
+	tft.TFTfillScreen(ST7735_BLACK);
+	tft.setTextColor(rand() % 0x10000);
+	tft.TFTsetCursor(0,0);
+	tft.TFTsetScrollDefinition(0,160,1);
+
+    for(int i=0; i<160; i++)
+    {
+        tft.print("Hello World!");
+    }
 
     ListDir("/c64_tap");
 
@@ -190,4 +205,39 @@ void ListDir(const TCHAR* path)
     {
         printf("Failed to open \"%s\"\r\n", path);
     }
+}
+
+void InitTFTDisplay(ST7735_TFT *tft)
+{
+	sleep_ms(20);	// wait to tft 20ms
+
+//*************** USER OPTION 0 SPI_SPEED + TYPE ***********
+	bool bhardwareSPI = true; // true for hardware spi,
+
+	if (bhardwareSPI == true) { // hw spi
+		uint32_t TFT_SCLK_FREQ =  40000 ; // Spi freq in KiloHertz , 1000 = 1Mhz
+		tft->TFTInitSPIType(TFT_SCLK_FREQ, spi1);
+	} else { // sw spi
+		tft->TFTInitSPIType();
+	}
+
+// ******** USER OPTION 1 GPIO *********
+// NOTE if using Hardware SPI clock and data pins will be tied to
+// the chosen interface eg Spi0 CLK=18 DIN=19)
+	int8_t SDIN_TFT = 11;
+	int8_t SCLK_TFT = 10;
+	int8_t DC_TFT = 15;
+	int8_t CS_TFT = 14 ;
+	int8_t RST_TFT = 13;
+	tft->TFTSetupGPIO(RST_TFT, DC_TFT, CS_TFT, SCLK_TFT, SDIN_TFT);
+
+// ****** USER OPTION 2 Screen Setup ******
+	uint8_t OFFSET_COL = 0;  // 2, These offsets can be adjusted for any issues->
+	uint8_t OFFSET_ROW = 0; // 3, with screen manufacture tolerance/defects
+    uint16_t TFT_WIDTH = 128;// Screen width in pixels
+    uint16_t TFT_HEIGHT = 160; // Screen height in pixels
+    tft->TFTInitScreenSize(OFFSET_COL, OFFSET_ROW , TFT_WIDTH , TFT_HEIGHT);
+
+// ******** USER OPTION 3 PCB_TYPE  **************************
+	tft->TFTInitPCBType(TFT_PCBtype_e::TFT_ST7735S_Black); // pass enum,4 choices,see README
 }
