@@ -16,7 +16,6 @@
 #include <hardware/clocks.h>
 #include "sd_card.h"
 #include "ff.h"
-#include "st7735/ST7735_TFT.hpp"
 
 //#include "tap_images/ggs.h"           // the great giana sisters
 //#include "tap_images/aargh_tap.h"     // aargh!
@@ -46,6 +45,8 @@ bool    sd_card_is_ready;
 #include "./c1530.h"
 C1530Class c1530;
 
+#include "st7735/ST7735_TFT.hpp"
+ST7735_TFT tft;
 
 void CheckKeys();
 int InitSDCard();
@@ -63,9 +64,7 @@ int main()
     uint32_t freq = clock_get_hz(clk_sys);
     printf("System clock set to %u Hz\n", freq);
 
-
     FIL file;
-    ST7735_TFT tft;
 
     //  PlayButton is Input an set pull down
     gpio_init(PLAY_BUTTON_GPIO);
@@ -87,11 +86,6 @@ int main()
 	tft.setTextColor(rand() % 0x10000);
 	tft.TFTsetCursor(0,0);
 	tft.TFTsetScrollDefinition(0,160,1);
-
-    for(int i=0; i<160; i++)
-    {
-        tft.print("Hello World!");
-    }
 
     ListDir("/c64_tap");
 
@@ -174,6 +168,8 @@ void ListDir(const TCHAR* path)
     FILINFO fno;
     int nfile, ndir;
 
+    char str0[256];
+
     printf("List all directory items [%s]\r\n", path);
 
     res = f_opendir(&dir, path);
@@ -187,13 +183,17 @@ void ListDir(const TCHAR* path)
             if(fno.fattrib & AM_DIR)
             {
                 // Directory
-                printf("<DIR>  %s\n", fno.fname);
+                sprintf(str0, "<DIR>  %s\n", fno.fname);
+                tft.print(str0);
+                printf(str0);
                 ndir++;
             }
             else
             {
                 // File
-                printf("%s\n", fno.fsize, fno.fname);
+                sprintf(str0, "%s\n", fno.fname);
+                tft.print(str0);
+                printf(str0);
                 nfile++;
             }
         }
