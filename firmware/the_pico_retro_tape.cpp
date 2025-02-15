@@ -57,7 +57,8 @@ void ListDir(const TCHAR* path);
 int main()
 {
     // Set system clock to 200 MHz
-    set_sys_clock_khz(200000, true);
+    //set_sys_clock_khz(200000, true);
+    
     stdio_init_all();
 
     // Überprüfen Sie die tatsächliche Taktfrequenz
@@ -83,7 +84,7 @@ int main()
 
     tft.TFTFontNum(TFTFont_Default);
 	tft.TFTfillScreen(ST7735_BLACK);
-	tft.setTextColor(rand() % 0x10000);
+	tft.setTextColor(0xffff, 0x0000);
 	tft.TFTsetCursor(0,0);
 	tft.TFTsetScrollDefinition(0,160,1);
 
