@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "ThePicoRetroTape")
-		(date "2025-02-15")
+		(date "2025-02-16")
 		(rev "V1.0")
 		(company "Thorsten Kattanek")
 	)
@@ -2181,6 +2181,36 @@
 	)
 	(wire
 		(pts
+			(xy 82.55 68.58) (xy 88.9 68.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3551fe7a-bd47-4de5-83a1-dee0d85fee7d")
+	)
+	(wire
+		(pts
+			(xy 76.2 167.64) (xy 81.28 167.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3fab330f-7023-47f4-b768-9910201e6d1d")
+	)
+	(wire
+		(pts
+			(xy 82.55 73.66) (xy 88.9 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "434a3a0d-6b13-4fe7-9359-a2b7042d2a67")
+	)
+	(wire
+		(pts
 			(xy 82.55 81.28) (xy 88.9 81.28)
 		)
 		(stroke
@@ -2208,6 +2238,16 @@
 			(type default)
 		)
 		(uuid "5880359e-5585-4897-80b0-d7935b792be5")
+	)
+	(wire
+		(pts
+			(xy 57.15 154.94) (xy 66.04 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "58bccd5f-8493-4bd9-91da-c4a529bb036f")
 	)
 	(wire
 		(pts
@@ -2311,6 +2351,26 @@
 	)
 	(wire
 		(pts
+			(xy 82.55 71.12) (xy 88.9 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "869371c4-6324-4f37-99d6-e9428a4d3ae0")
+	)
+	(wire
+		(pts
+			(xy 76.2 154.94) (xy 81.28 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8aa946d0-00aa-423d-a23b-6edddde6f042")
+	)
+	(wire
+		(pts
 			(xy 59.69 73.66) (xy 59.69 74.93)
 		)
 		(stroke
@@ -2318,6 +2378,16 @@
 			(type default)
 		)
 		(uuid "908b73c7-f15d-466a-a25d-03d05645296f")
+	)
+	(wire
+		(pts
+			(xy 57.15 167.64) (xy 66.04 167.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "93eded89-3d4e-425c-93d7-33f8410b215b")
 	)
 	(wire
 		(pts
@@ -2351,13 +2421,23 @@
 	)
 	(wire
 		(pts
-			(xy 124.46 53.34) (xy 133.35 53.34)
+			(xy 57.15 142.24) (xy 66.04 142.24)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "ad9fe262-ea0f-4a4d-97c3-c4ecc8da5ccd")
+		(uuid "ada6a8e1-c71d-4a74-8898-76cafcf54935")
+	)
+	(wire
+		(pts
+			(xy 76.2 142.24) (xy 81.28 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c3bd3166-fcd2-405e-90b1-7075469f8c1f")
 	)
 	(wire
 		(pts
@@ -2563,6 +2643,28 @@
 			)
 		)
 	)
+	(global_label "DOWN_BUTTON"
+		(shape input)
+		(at 57.15 154.94 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "1c9131e9-d853-40ae-bc4b-a3fe31518301")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 40.6181 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "TFT_SCK"
 		(shape input)
 		(at 82.55 81.28 180)
@@ -2651,6 +2753,28 @@
 			)
 		)
 	)
+	(global_label "ENTER_BUTTON"
+		(shape input)
+		(at 57.15 167.64 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "4e9a487a-001d-4134-a662-eea57f10f3ef")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 40.1344 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "TFT_CS"
 		(shape input)
 		(at 82.55 93.98 180)
@@ -2691,6 +2815,28 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "UP_BUTTON"
+		(shape input)
+		(at 57.15 142.24 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "6c66a31d-7266-4c2c-a757-428a167fc064")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 43.4 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
 				(hide yes)
 			)
 		)
@@ -2959,6 +3105,50 @@
 			)
 		)
 	)
+	(global_label "ENTER_BUTTON"
+		(shape input)
+		(at 82.55 73.66 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "c89c5783-450c-46da-865f-53587afd5a14")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 65.5344 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "UP_BUTTON"
+		(shape input)
+		(at 82.55 68.58 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "cb7fbab6-ca5a-48c4-afe2-ca7b6eacf56b")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 68.8 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "SD_CS"
 		(shape input)
 		(at 130.81 93.98 0)
@@ -3016,6 +3206,28 @@
 		(uuid "e0110471-26bf-49ba-b420-4a7ae8f9bfd8")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 68.8607 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "DOWN_BUTTON"
+		(shape input)
+		(at 82.55 71.12 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "e55b18f7-cb1d-4924-9eac-6b5d1c0ef51a")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 66.0181 71.12 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3093,7 +3305,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 133.35 53.34 90)
+		(at 124.46 53.34 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3102,7 +3314,7 @@
 		(fields_autoplaced yes)
 		(uuid "00a51d99-ea74-4a3a-9d65-cb013a0f8ad8")
 		(property "Reference" "#PWR06"
-			(at 139.7 53.34 0)
+			(at 130.81 53.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3111,7 +3323,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 137.16 53.3399 90)
+			(at 128.27 53.3399 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3120,7 +3332,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 133.35 53.34 0)
+			(at 124.46 53.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3129,7 +3341,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 133.35 53.34 0)
+			(at 124.46 53.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3138,7 +3350,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 133.35 53.34 0)
+			(at 124.46 53.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3153,6 +3365,73 @@
 			(project ""
 				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
 					(reference "#PWR06")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3.3V")
+		(at 81.28 142.24 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "014bd461-afc6-4b3e-839c-3fffc6218649")
+		(property "Reference" "#PWR014"
+			(at 77.47 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3.3V"
+			(at 85.09 142.2399 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 81.28 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 81.28 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
+			(at 81.28 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "956b1c5c-3f4c-4608-b19d-c518c5de1254")
+		)
+		(instances
+			(project "the_pico_retro_tape"
+				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
+					(reference "#PWR014")
 					(unit 1)
 				)
 			)
@@ -3411,6 +3690,73 @@
 			(project ""
 				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
 					(reference "R?")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3.3V")
+		(at 81.28 154.94 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "10e6261b-a65f-4bf3-b822-09ee5e248df8")
+		(property "Reference" "#PWR015"
+			(at 77.47 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3.3V"
+			(at 85.09 154.9399 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 81.28 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 81.28 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
+			(at 81.28 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "5274bea4-7e87-4a3b-8305-006b4a986c84")
+		)
+		(instances
+			(project "the_pico_retro_tape"
+				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
+					(reference "#PWR015")
 					(unit 1)
 				)
 			)
@@ -3683,6 +4029,73 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GND")
+		(at 88.9 91.44 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "3bde5b56-5aa8-4f99-9d38-b6c04902775a")
+		(property "Reference" "#PWR020"
+			(at 82.55 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 85.09 91.4399 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 88.9 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 88.9 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 88.9 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "451b4501-4dc5-4d41-8fe2-59ad8e7ae53c")
+		)
+		(instances
+			(project "the_pico_retro_tape"
+				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
+					(reference "#PWR020")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:+5V")
 		(at 133.35 50.8 270)
 		(unit 1)
@@ -3744,6 +4157,141 @@
 			(project ""
 				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
 					(reference "#PWR05")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 88.9 53.34 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "44dc2714-12d5-4409-bb2f-a788680aae99")
+		(property "Reference" "#PWR017"
+			(at 82.55 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 85.09 53.3399 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 88.9 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 88.9 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 88.9 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "40ead318-147f-4c05-a34a-2d82906fd766")
+		)
+		(instances
+			(project "the_pico_retro_tape"
+				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
+					(reference "#PWR017")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 71.12 142.24 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "470095ae-cd4b-4a7a-a8a9-8b23f777db41")
+		(property "Reference" "SW?"
+			(at 71.12 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "UP BUTTON"
+			(at 71.12 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 71.12 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 71.12 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Push button switch, generic, two pins"
+			(at 71.12 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d5f90c31-f034-40e8-881a-52ceab1068e9")
+		)
+		(pin "2"
+			(uuid "d470ab4f-6d0e-4914-9bda-05f831a1f566")
+		)
+		(instances
+			(project "the_pico_retro_tape"
+				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
+					(reference "SW?")
 					(unit 1)
 				)
 			)
@@ -3812,6 +4360,73 @@
 			(project ""
 				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
 					(reference "SW?")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 88.9 66.04 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "4a46c9c5-f232-4b56-9cb3-4faf7c1125cb")
+		(property "Reference" "#PWR018"
+			(at 82.55 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 85.09 66.0399 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 88.9 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 88.9 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 88.9 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f179143e-068e-4916-8cfa-64ee43f022ad")
+		)
+		(instances
+			(project "the_pico_retro_tape"
+				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
+					(reference "#PWR018")
 					(unit 1)
 				)
 			)
@@ -3950,6 +4565,141 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GND")
+		(at 124.46 78.74 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "67297985-edb7-40c2-a33a-89f0bec67b34")
+		(property "Reference" "#PWR022"
+			(at 130.81 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 128.27 78.7399 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 124.46 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 124.46 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 124.46 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b845a4cc-de4b-406f-a63b-bbadb47bdd44")
+		)
+		(instances
+			(project "the_pico_retro_tape"
+				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
+					(reference "#PWR022")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 71.12 154.94 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "6d960208-853a-4554-8f1d-0a99dec34d1c")
+		(property "Reference" "SW?"
+			(at 71.12 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "DOWN BUTTON"
+			(at 71.12 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 71.12 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 71.12 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Push button switch, generic, two pins"
+			(at 71.12 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "0286830e-2fac-484e-81d3-14068e0dca39")
+		)
+		(pin "2"
+			(uuid "17bfadb2-f377-416b-80df-62c725f6c317")
+		)
+		(instances
+			(project "the_pico_retro_tape"
+				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
+					(reference "SW?")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:R")
 		(at 227.33 95.25 0)
 		(unit 1)
@@ -4014,6 +4764,73 @@
 			(project ""
 				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
 					(reference "R?")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3.3V")
+		(at 81.28 167.64 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "78531063-8120-4899-a748-f1b6a8d02757")
+		(property "Reference" "#PWR016"
+			(at 77.47 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3.3V"
+			(at 85.09 167.6399 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 81.28 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 81.28 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
+			(at 81.28 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6ae81972-6301-4fa4-bb1c-05a76812d7fc")
+		)
+		(instances
+			(project "the_pico_retro_tape"
+				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
+					(reference "#PWR016")
 					(unit 1)
 				)
 			)
@@ -4248,6 +5065,73 @@
 			(project ""
 				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
 					(reference "#PWR01")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 124.46 91.44 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "91b40b44-3b1a-44c3-877f-a4fc95ded249")
+		(property "Reference" "#PWR021"
+			(at 130.81 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 128.27 91.4399 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 124.46 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 124.46 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 124.46 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6d4e5761-5082-41a3-9145-6301e577527a")
+		)
+		(instances
+			(project "the_pico_retro_tape"
+				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
+					(reference "#PWR021")
 					(unit 1)
 				)
 			)
@@ -4596,6 +5480,208 @@
 			(project "the_pico_retro_tape"
 				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
 					(reference "#PWR07")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 124.46 66.04 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "de4f197c-a9ed-4727-8aeb-38bf2971fd13")
+		(property "Reference" "#PWR023"
+			(at 130.81 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 128.27 66.0399 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 124.46 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 124.46 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 124.46 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "1b1e158f-b400-4a1f-b991-d60cc64626db")
+		)
+		(instances
+			(project "the_pico_retro_tape"
+				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
+					(reference "#PWR023")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 88.9 78.74 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e9e0a4d7-3de3-4992-a12e-0934a11289c6")
+		(property "Reference" "#PWR019"
+			(at 82.55 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 85.09 78.7399 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 88.9 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 88.9 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 88.9 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b3efb60a-8e10-4237-9c88-a3c34d4dbaed")
+		)
+		(instances
+			(project "the_pico_retro_tape"
+				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
+					(reference "#PWR019")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 71.12 167.64 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ee10813f-3179-49f2-9c78-ab8142c672a6")
+		(property "Reference" "SW?"
+			(at 71.12 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "ENTER BUTTON"
+			(at 71.12 162.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 71.12 162.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 71.12 162.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Push button switch, generic, two pins"
+			(at 71.12 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "927ed707-f390-469b-83e2-49ccb9ec4541")
+		)
+		(pin "2"
+			(uuid "d57b39c8-ef32-4f6a-9695-693ba1838f15")
+		)
+		(instances
+			(project "the_pico_retro_tape"
+				(path "/58eb91ea-7f3f-48ec-bf75-2e4d8bc1bbc2"
+					(reference "SW?")
 					(unit 1)
 				)
 			)
