@@ -111,7 +111,7 @@ bool C1530Class::open_image(char* filename)
     return true;
 }
 
-bool C1530Class::open_image(const uint8_t* image_buffer, int image_buffer_size, IMAGE_TYPE type)
+bool C1530Class::open_image(const uint8_t* image_buffer, u_int image_buffer_size, IMAGE_TYPE type)
 {
     if(image_buffer == nullptr)
         return false;

@@ -53,7 +53,7 @@ public:
      * @param type The type of the image.
      * @return true if the image was successfully opened, false otherwise.
      */
-    bool open_image(const uint8_t* image_buffer, int image_buffer_size, IMAGE_TYPE type);  // from memory
+    bool open_image(const uint8_t* image_buffer, UINT image_buffer_size, IMAGE_TYPE type);  // from memory
     
     /**
      * @brief Closes the currently open image file.
@@ -97,7 +97,7 @@ private:
     void send_test();
 
     const uint8_t *tap_data_buffer;
-    int tap_data_buffer_size;
+    UINT tap_data_buffer_size;
 
     bool buffer0_is_ready;
     bool buffer1_is_ready;

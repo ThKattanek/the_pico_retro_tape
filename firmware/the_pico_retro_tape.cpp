@@ -34,6 +34,9 @@ bool    sd_card_is_ready;
 // Keys
 #define KEY_WAIT 10000          // Tasten Entprellen
 #define PLAY_BUTTON_GPIO        20
+#define KEY_UP_GPIO        6
+#define KEY_DOWN_GPIO      7
+#define KEY_ENTER_GPIO     8
 
 ///// for commodore datasette 1530 support
 
@@ -53,7 +56,6 @@ int InitSDCard();
 void InitTFTDisplay(ST7735_TFT *tft);
 void ReleaseSDCard();
 void ListDir(const TCHAR* path);
-
 int main()
 {
     // Set system clock to 200 MHz
@@ -63,14 +65,28 @@ int main()
 
     // Überprüfen Sie die tatsächliche Taktfrequenz
     uint32_t freq = clock_get_hz(clk_sys);
-    printf("System clock set to %u Hz\n", freq);
-
-    FIL file;
+    printf("System clock set to %lu Hz\n", freq);
 
     //  PlayButton is Input an set pull down
     gpio_init(PLAY_BUTTON_GPIO);
     gpio_set_dir(PLAY_BUTTON_GPIO, false);
     gpio_set_pulls(PLAY_BUTTON_GPIO, false, true);
+
+    //  KeyUp is Input an set pull down
+    gpio_init(KEY_UP_GPIO);
+    gpio_set_dir(KEY_UP_GPIO, false);
+    gpio_set_pulls(KEY_UP_GPIO, false, true);
+
+    //  KeyDown is Input an set pull down
+    gpio_init(KEY_DOWN_GPIO);
+    gpio_set_dir(KEY_DOWN_GPIO, false);
+    gpio_set_pulls(KEY_DOWN_GPIO, false, true);
+
+    //  KeyEnter is Input an set pull down
+    gpio_init(KEY_ENTER_GPIO);
+    gpio_set_dir(KEY_ENTER_GPIO, false);
+    gpio_set_pulls(KEY_ENTER_GPIO, false, true);
+
 
     c1530.init_gpios(C1530_TAPE_READ_GPIO, C1530_TAPE_WRITE_GPIO, C1530_TAPE_SENSE_GPIO, C1530_TAPE_MOTOR_GPIO);
     gpio_put(C1530_TAPE_SENSE_GPIO, true);
@@ -169,7 +185,7 @@ void ListDir(const TCHAR* path)
     FILINFO fno;
     int nfile, ndir;
 
-    char str0[256];
+    char str0[266];
 
     printf("List all directory items [%s]\r\n", path);
 
