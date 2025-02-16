@@ -116,4 +116,4 @@ Initialisiert das ST7735-TFT-Display.
 
 ## Lizenz
 
-Dieses Projekt ist unter der MIT-Lizenz lizenziert. Weitere Informationen finden Sie in der LICENSE Datei.
+Dieses Projekt ist unter der GNU General Public License v2.0 lizenziert. Weitere Informationen finden Sie in der LICENSE Datei.
