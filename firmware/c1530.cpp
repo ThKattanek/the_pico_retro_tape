@@ -99,6 +99,7 @@ bool C1530Class::open_image(char* filename)
             {
                 image_source = IMAGE_SOURCE::SDCARD;
                 image_type = IMAGE_TYPE::TAP;
+                tap_image_pos = 0;
                 is_tape_insert = true;
             }
         }
@@ -187,7 +188,7 @@ void C1530Class::read_start()
 
     if(image_source == IMAGE_SOURCE::SDCARD)
     {
-        tap_image_pos = 0;
+        //tap_image_pos = 0;
     }
     else
         tap_image_pos = 0x14;

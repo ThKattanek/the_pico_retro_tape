@@ -24,7 +24,11 @@
 
 // SD Card
 char buf[100];
-char filename[] = "/c64_tap/hoh.tap";
+char filename[] = "/c64_tap/Demos [ABC].tap";
+
+char dir_entrys[16][256];   // 16 Einträge mit 256 Zeichen
+bool dir_entrys_is_dir[16]; // is true if entry is a directory ; false if entry is a file
+int dir_entrys_pos = 0;
 
 FATFS fs;
 int ret;
@@ -55,11 +59,13 @@ void CheckKeys();
 int InitSDCard();
 void InitTFTDisplay(ST7735_TFT *tft);
 void ReleaseSDCard();
+void ReadDirEntrys(const TCHAR* path);
+void DrawFileBrowser();
 void ListDir(const TCHAR* path);
 int main()
 {
     // Set system clock to 200 MHz
-    //set_sys_clock_khz(200000, true);
+    set_sys_clock_khz(220000, true);
     
     stdio_init_all();
 
@@ -97,14 +103,15 @@ int main()
         sd_card_is_ready = false;
 
     InitTFTDisplay(&tft);
-
     tft.TFTFontNum(TFTFont_Default);
+
 	tft.TFTfillScreen(ST7735_BLACK);
 	tft.setTextColor(0xffff, 0x0000);
 	tft.TFTsetCursor(0,0);
 	tft.TFTsetScrollDefinition(0,160,1);
 
-    ListDir("/c64_tap");
+    ReadDirEntrys("/c64_tap");
+    DrawFileBrowser();
 
     // Open a tap image with the c1530 class and print corresponding message
     if (c1530.open_image(filename)) {
@@ -116,7 +123,6 @@ int main()
     while (true) 
     {
         CheckKeys();
-
         // sendbuffer fill with new data
         if(!c1530.is_tap_end())
             c1530.update();
@@ -128,6 +134,12 @@ void CheckKeys()
     static int key_wait_counter = 0;
     static bool play_button_new_state = false;
     static bool play_button_old_state = false;
+    static bool up_button_new_state = false;
+    static bool up_button_old_state = false;
+    static bool down_button_new_state = false;
+    static bool down_button_old_state = false;
+    static bool enter_button_new_state = false;
+    static bool enter_button_old_state = false;
 
     if(key_wait_counter == KEY_WAIT)
     {
@@ -141,6 +153,53 @@ void CheckKeys()
             c1530.read_start();
         }
         play_button_old_state = play_button_new_state;
+
+        up_button_new_state = gpio_get(KEY_UP_GPIO);
+        if(up_button_new_state == true && up_button_old_state == false)
+        {
+            printf("Up Button is pressed!\n");
+            dir_entrys_pos--;
+            if(dir_entrys_pos < 0)
+                dir_entrys_pos = 0;
+            DrawFileBrowser();
+        }
+        up_button_old_state = up_button_new_state;
+
+        down_button_new_state = gpio_get(KEY_DOWN_GPIO);
+        if(down_button_new_state == true && down_button_old_state == false)
+        {
+            printf("Down Button is pressed!\n");
+            dir_entrys_pos++;
+            if(dir_entrys_pos > 15)
+                dir_entrys_pos = 15;    
+            DrawFileBrowser();
+        }
+        down_button_old_state = down_button_new_state;
+
+        enter_button_new_state = gpio_get(KEY_ENTER_GPIO);
+        if(enter_button_new_state == true && enter_button_old_state == false)
+        {
+            printf("Enter Button is pressed!\n");
+            if(dir_entrys_is_dir[dir_entrys_pos])
+            {
+                char path[256];
+                sprintf(path, "/tap/%s", dir_entrys[dir_entrys_pos]);
+                ReadDirEntrys(path);
+                DrawFileBrowser();
+            }
+            else
+            {
+                printf("Open file %s\n", dir_entrys[dir_entrys_pos]);
+                char path[256];
+                sprintf(path, "/c64_tap/%s", dir_entrys[dir_entrys_pos]);
+                if (c1530.open_image(path)) {
+                    printf("Successfully opened 1530 image \"%s\"\n", path);
+                } else {
+                    printf("Failed to open 1530 image \"%s\"\n", path);
+                }
+            }
+        }
+        enter_button_old_state = enter_button_new_state;
     }
 
     key_wait_counter++;
@@ -178,7 +237,7 @@ void ReleaseSDCard()
     f_unmount("");
 }
 
-void ListDir(const TCHAR* path)
+void ReadDirEntrys(const TCHAR* path)
 {
     FRESULT res;
     DIR dir;
@@ -191,7 +250,7 @@ void ListDir(const TCHAR* path)
 
     res = f_opendir(&dir, path);
     if(res == FR_OK)
-    {   
+    { 
         nfile = ndir = 0;
         for(;;)
         {
@@ -201,18 +260,99 @@ void ListDir(const TCHAR* path)
             {
                 // Directory
                 sprintf(str0, "<DIR>  %s\n", fno.fname);
-                tft.print(str0);
                 printf(str0);
+                strncpy(dir_entrys[ndir + nfile], str0, 256);
+                dir_entrys_is_dir[ndir + nfile] = true;
                 ndir++;
             }
             else
             {
                 // File
                 sprintf(str0, "%s\n", fno.fname);
-                tft.print(str0);
                 printf(str0);
+                strncpy(dir_entrys[ndir + nfile], str0, 256);
+                dir_entrys_is_dir[ndir + nfile] = false;
                 nfile++;
             }
+            if(nfile + ndir == 16) break;
+        }
+
+        f_closedir(&dir);
+        printf("\r\n%d dirs, %d files.\r\n", ndir, nfile);
+    }   
+    else
+    {
+        printf("Failed to open \"%s\"\r\n", path);
+    }
+}
+
+void DrawFileBrowser()
+{
+    int y_pos = 0;
+    for(int i=0; i<16; i++)
+    {
+        tft.TFTsetCursor(0,y_pos); 
+        uint16_t bg_color;
+
+        if(i == dir_entrys_pos)
+            bg_color = 0xf800;
+        else
+            bg_color = 0x0000;
+
+        if(dir_entrys_is_dir[i])
+            tft.setTextColor(0x07E0, bg_color);
+        else
+            tft.setTextColor(0xffff, bg_color);
+
+        tft.print(dir_entrys[i]);
+        y_pos += 10;
+    }
+}
+
+void ListDir(const TCHAR* path)
+{
+    FRESULT res;
+    DIR dir;
+    FILINFO fno;
+    int nfile, ndir;
+
+    char str0[266];
+
+    printf("List all directory items [%s]\r\n", path);
+
+    char out_str[22];
+    out_str[21] = 0;
+
+    res = f_opendir(&dir, path);
+    if(res == FR_OK)
+    { 
+        nfile = ndir = 0;
+        int y_pos = 0;
+        for(;;)
+        {
+            tft.TFTsetCursor(0,y_pos); 
+            res = f_readdir(&dir, &fno);
+            if(res != FR_OK || fno.fname[0] == 0) break;
+            if(fno.fattrib & AM_DIR)
+            {
+                // Directory
+                //sprintf(str0, "<DIR>  %s\n", fno.fname);
+                strncpy(out_str, fno.fname, 21);
+                tft.print(out_str);
+                printf(out_str);
+                ndir++;
+            }
+            else
+            {
+                // File
+                //sprintf(str0, "%s\n", fno.fname);
+                strncpy(out_str, fno.fname, 21);
+                tft.print(out_str);
+                printf(out_str);
+                nfile++;
+            }
+            if(nfile + ndir == 16) break;
+            y_pos += 10;
         }
 
         f_closedir(&dir);
