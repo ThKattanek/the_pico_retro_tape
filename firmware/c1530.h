@@ -71,6 +71,7 @@ public:
      * data acquisition.
      */
     void read_start();
+    void stop();
     bool is_tap_end();
     double calculate_tap_runtime();
 

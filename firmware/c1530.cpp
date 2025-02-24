@@ -194,11 +194,19 @@ void C1530Class::read_start()
         tap_image_pos = 0x14;
             
     gpio_put(read_gpio, true);
+    gpio_put(sense_gpio, false);  
     add_repeating_timer_us(-1000, timer_callback_send_data, this, &timer);
 
     buffer0_is_ready = false;
     buffer1_is_ready = false;
     tap_image_is_end = false;
+}
+
+void C1530Class::stop()
+{
+    cancel_repeating_timer(&timer);
+    gpio_put(read_gpio, true);
+    gpio_put(sense_gpio, true);  
 }
 
 bool C1530Class::is_tap_end()

@@ -44,8 +44,9 @@ pico_sdk_init()
 
 add_executable(${PROJECT_NAME} 
     the_pico_retro_tape.cpp
-    hw_config.c 
-    c1530.cpp 
+    hw_config.c
+    file_browser.cpp 
+    c1530.cpp
 )
 
 pico_set_program_name(${PROJECT_NAME} "ThePicoRetroTape")
