@@ -107,7 +107,7 @@ int main()
 	tft.TFTsetCursor(0,0);
 	tft.TFTsetScrollDefinition(0,160,1);
 
-    file_browser = new FileBrowser(&tft, "/c64_tap");
+    file_browser = new FileBrowser(&tft, "/");
 
     // Open a tap image with the c1530 class and print corresponding message
     if (c1530.open_image(filename)) {
@@ -169,17 +169,19 @@ void CheckKeys()
         if(enter_button_new_state == true && enter_button_old_state == false)
         {
             printf("Enter Button is pressed!\n");
-            char* file = file_browser->GetCurrentFile();
-
-            printf("Open file %s\n", file);
-            char path[256];
-
-            sprintf(path, "/c64_tap/%s", file);
-            if (c1530.open_image(path)) {
-                printf("Successfully opened 1530 image \"%s\"\n", path);
-                c1530.stop();
-            } else {
-                printf("Failed to open 1530 image \"%s\"\n", path);
+            if(!file_browser->Enter())
+            {
+                // Open file
+                char* file = file_browser->GetCurrentFile();
+                printf("Open file %s\n", file);
+                char path[256];
+                sprintf(path, "/c64_tap/%s", file);
+                if (c1530.open_image(path)) {
+                    printf("Successfully opened 1530 image \"%s\"\n", path);
+                    c1530.stop();
+                } else {
+                    printf("Failed to open 1530 image \"%s\"\n", path);
+                }
             }
 
             /*
