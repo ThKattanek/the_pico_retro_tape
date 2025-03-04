@@ -17,7 +17,7 @@
 FileBrowser::FileBrowser(ST7735_TFT* tft, const char* root_path)
     : dir_entrys_pos(0), dir_entrys_pos_old(0) , tft(tft), root_path((char*)root_path), current_path(NULL), dir_level(0)
 {
-    current_path = (char*)malloc(strlen(root_path) + 1);
+    current_path = (char*)malloc(MAX_PATH_LENGTH);
     strcpy(current_path, root_path);    
     DrawPage();
 }   
@@ -76,15 +76,19 @@ bool FileBrowser::Enter()
             char* p = strrchr(current_path, '/');
             if(p != NULL)
             {
-                *(p+1) = '\0';
+                *p = '\0'; // Entferne den letzten Teil des Pfads
                 dir_level--;
+            }
+            if (strlen(current_path) == 0) {
+                strcpy(current_path, "/");
             }
         }
         else
         {
             // Go down one directory
-            if(dir_level > 0)
+            if(strcmp(current_path, "/") != 0)
                 strcat(current_path, "/");
+            
             strcat(current_path, dir_entrys[dir_entrys_pos]);
             dir_level++;
         }
@@ -100,6 +104,24 @@ bool FileBrowser::Enter()
     else
     {
         return false;   // is a file
+    }
+}
+
+void FileBrowser::Back()
+{
+    // Go up one directory
+    if (strcmp(current_path, "/") != 0) {
+        char* p = strrchr(current_path, '/');
+        if(p != NULL)
+        {
+            *p = '\0'; // Entferne den letzten Teil des Pfads
+            dir_level--;
+            if (strlen(current_path) == 0) {
+                strcpy(current_path, "/");
+            }
+            dir_entrys_pos = 0;
+            DrawPage();
+        }
     }
 }
 

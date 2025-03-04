@@ -19,6 +19,7 @@
 #include "st7735/ST7735_TFT.hpp"
 
 #define MAX_DIR_ENTRYS 16
+#define MAX_PATH_LENGTH 4096
 
 class FileBrowser {
 public:
@@ -37,6 +38,7 @@ public:
     void Up();
     void Down();
     bool Enter();
+    void Back();
 
 private:
     void ReadDirEntrys();
@@ -44,7 +46,7 @@ private:
 
     int     current_page = 0;                   // Current page
     int     current_page_entries = 0;           // Number of entries on the current page
-    char    dir_entrys[MAX_DIR_ENTRYS][256];    // Directory entrys
+    char    dir_entrys[MAX_DIR_ENTRYS][266];    // Directory entrys
     bool    dir_entrys_is_dir[16];              // is true if entry is a directory ; false if entry is a file
     int     dir_entrys_pos;                     // Position in the directory entrys
     int     dir_entrys_pos_old;                 // Old position in the directory entrys
