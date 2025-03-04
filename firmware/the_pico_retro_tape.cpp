@@ -64,7 +64,7 @@ void ReleaseSDCard();
 int main()
 {
     // Set system clock to 200 MHz
-    set_sys_clock_khz(220000, true);
+    // set_sys_clock_khz(220000, true);
     
     stdio_init_all();
 
