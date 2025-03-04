@@ -23,7 +23,7 @@
 
 class FileBrowser {
 public:
-    FileBrowser(ST7735_TFT* tft, const char* root_path);
+    FileBrowser(ST7735_TFT* tft, const char* root_path, const char** allowed_extensions = NULL);
     ~FileBrowser();
 
     void set_bg_color(uint16_t color) { bg_color = color; }
@@ -52,6 +52,9 @@ private:
     int     dir_entrys_pos_old;                 // Old position in the directory entrys
 
     ST7735_TFT* tft;        // TFT Display
+
+    const char** allowed_extensions;            // Erlaubte Dateiendungen
+    int num_allowed_extensions;
 
     bool  hide_dot_files = true;    // Hide dot files
     char* root_path;                // Root path of the file browser

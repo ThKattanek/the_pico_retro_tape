@@ -14,11 +14,18 @@
 
 // Constructor
 
-FileBrowser::FileBrowser(ST7735_TFT* tft, const char* root_path)
+FileBrowser::FileBrowser(ST7735_TFT* tft, const char* root_path, const char** allowed_extensions)
     : dir_entrys_pos(0), dir_entrys_pos_old(0) , tft(tft), root_path((char*)root_path), current_path(NULL), dir_level(0)
 {
     current_path = (char*)malloc(MAX_PATH_LENGTH);
     strcpy(current_path, root_path);    
+
+    if(allowed_extensions != NULL)
+    {
+        this->allowed_extensions = allowed_extensions;
+        this->num_allowed_extensions = sizeof(allowed_extensions) / sizeof(allowed_extensions[0]);
+    }   
+
     DrawPage();
 }   
 
@@ -170,7 +177,25 @@ void FileBrowser::ReadDirEntrys()
             else
             {
                 // File
-                if(hide_dot_files && fno.fname[0] != '.')
+                bool allowed = false;
+
+                if(num_allowed_extensions == 0)
+                {
+                    allowed = true;
+                }
+                else
+                {
+                    for (int i = 0; i < num_allowed_extensions; i++)
+                    {
+                        if (strstr(fno.fname, allowed_extensions[i]) != NULL)
+                        {
+                            allowed = true;
+                            break;
+                        }
+                    }
+                }
+
+                if(hide_dot_files && fno.fname[0] != '.' && allowed)
                 {
                     strncpy(dir_entrys[ndir + nfile], fno.fname, 255);
                     dir_entrys_is_dir[ndir + nfile] = false;

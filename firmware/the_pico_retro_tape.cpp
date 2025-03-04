@@ -26,6 +26,8 @@
 char buf[100];
 char filename[] = "/c64_tap/Demos [ABC].tap";
 
+const char* allowed_extensions[] = {".tap", ".t64", ".prg"};
+
 FATFS fs;
 int ret;
 
@@ -33,7 +35,7 @@ bool    sd_card_is_ready;
 
 // Keys
 #define KEY_WAIT 10000          // Tasten Entprellen
-#define PLAY_BUTTON_GPIO        20
+#define PLAY_BUTTON_GPIO   20
 #define KEY_UP_GPIO        6
 #define KEY_DOWN_GPIO      7
 #define KEY_ENTER_GPIO     8
@@ -62,9 +64,9 @@ void ReleaseSDCard();
 int main()
 {
     // Set system clock to 200 MHz
-    // set_sys_clock_khz(220000, true);
+    set_sys_clock_khz(220000, true);
     
-            stdio_init_all();
+    stdio_init_all();
 
     // Überprüfen Sie die tatsächliche Taktfrequenz
     uint32_t freq = clock_get_hz(clk_sys);
@@ -107,7 +109,7 @@ int main()
 	tft.TFTsetCursor(0,0);
 	tft.TFTsetScrollDefinition(0,160,1);
 
-    file_browser = new FileBrowser(&tft, "/");
+    file_browser = new FileBrowser(&tft, "/", allowed_extensions);
 
     // Open a tap image with the c1530 class and print corresponding message
     if (c1530.open_image(filename)) {
