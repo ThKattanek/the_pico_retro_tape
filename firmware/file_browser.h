@@ -23,7 +23,7 @@
 
 class FileBrowser {
 public:
-    FileBrowser(ST7735_TFT* tft, const char* root_path, const char** allowed_extensions = NULL);
+    FileBrowser(ST7735_TFT* tft, const char* root_path, const char** allowed_extensions = NULL, int num_allowed_extensions = 0);
     ~FileBrowser();
 
     void set_bg_color(uint16_t color) { bg_color = color; }
@@ -41,7 +41,7 @@ public:
     void Back();
 
 private:
-    void ReadDirEntrys();
+    int ReadDirEntrys();
     void DrawLine(int line, bool selected);
 
     int     current_page = 0;                   // Current page

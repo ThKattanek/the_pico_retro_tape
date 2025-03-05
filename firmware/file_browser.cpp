@@ -14,7 +14,7 @@
 
 // Constructor
 
-FileBrowser::FileBrowser(ST7735_TFT* tft, const char* root_path, const char** allowed_extensions)
+FileBrowser::FileBrowser(ST7735_TFT* tft, const char* root_path, const char** allowed_extensions, int num_allowed_extensions)
     : dir_entrys_pos(0), dir_entrys_pos_old(0) , tft(tft), root_path((char*)root_path), current_path(NULL), dir_level(0)
 {
     current_path = (char*)malloc(MAX_PATH_LENGTH);
@@ -23,7 +23,7 @@ FileBrowser::FileBrowser(ST7735_TFT* tft, const char* root_path, const char** al
     if(allowed_extensions != NULL)
     {
         this->allowed_extensions = allowed_extensions;
-        this->num_allowed_extensions = sizeof(allowed_extensions) / sizeof(allowed_extensions[0]);
+        this->num_allowed_extensions = num_allowed_extensions;
     }   
 
     DrawPage();
@@ -39,7 +39,8 @@ FileBrowser::~FileBrowser()
 
 void FileBrowser::DrawPage()
 {
-    ReadDirEntrys();
+    int num_files = ReadDirEntrys();
+
     tft->TFTfillScreen(0x0000);
 
     for(int i=0; i<current_page_entries; i++)
@@ -134,7 +135,7 @@ void FileBrowser::Back()
 
 // Private functions
 
-void FileBrowser::ReadDirEntrys()
+int FileBrowser::ReadDirEntrys()
 {
     FRESULT res;
     DIR dir;
@@ -209,10 +210,17 @@ void FileBrowser::ReadDirEntrys()
         current_page_entries = nfile + ndir;
 
         printf("\r\n%d dirs, %d files.\r\n", ndir, nfile);
+
+        int num_files = nfile + ndir;
+        if(dir_level > 0)   
+            num_files--;   
+
+        return num_files;
     }   
     else
     {
         printf("Failed to open \"%s\"\r\n", current_path);
+        return 0;
     }
 }
 

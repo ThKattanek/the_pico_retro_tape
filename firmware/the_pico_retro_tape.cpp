@@ -109,7 +109,7 @@ int main()
 	tft.TFTsetCursor(0,0);
 	tft.TFTsetScrollDefinition(0,160,1);
 
-    file_browser = new FileBrowser(&tft, "/", allowed_extensions);
+    file_browser = new FileBrowser(&tft, "/", allowed_extensions, 3);
 
     // Open a tap image with the c1530 class and print corresponding message
     if (c1530.open_image(filename)) {
