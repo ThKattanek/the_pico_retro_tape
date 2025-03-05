@@ -39,7 +39,14 @@ FileBrowser::~FileBrowser()
 
 void FileBrowser::DrawPage()
 {
-    int num_files = ReadDirEntrys();
+    if(ReadDirEntrys() == 0)
+    {
+        if(current_page > 0)
+        {
+            current_page--;
+        }
+        return; 
+    }
 
     tft->TFTfillScreen(0x0000);
 
@@ -58,7 +65,17 @@ void FileBrowser::Up()
 
     dir_entrys_pos--;
     if(dir_entrys_pos < 0)
+    {
+        // previous page
+        if(current_page > 0)
+        {
+            current_page--;
+            DrawPage();
+        }
+
+
         dir_entrys_pos = current_page_entries-1;
+    }
 
     DrawLine(dir_entrys_pos, true);
 }
@@ -69,7 +86,13 @@ void FileBrowser::Down()
 
     dir_entrys_pos++;
     if(dir_entrys_pos > current_page_entries-1)
+    {
+        // next page
+        current_page++;
+        DrawPage();
+
         dir_entrys_pos = 0;
+    }   
 
     DrawLine(dir_entrys_pos, true);
 }
@@ -90,6 +113,7 @@ bool FileBrowser::Enter()
             if (strlen(current_path) == 0) {
                 strcpy(current_path, "/");
             }
+            current_page = 0;
         }
         else
         {
@@ -99,6 +123,7 @@ bool FileBrowser::Enter()
             
             strcat(current_path, dir_entrys[dir_entrys_pos]);
             dir_level++;
+            current_page = 0;
         }
 
         dir_entrys_pos_old = dir_entrys_pos;
@@ -149,6 +174,22 @@ int FileBrowser::ReadDirEntrys()
     res = f_opendir(&dir, current_path);
     if(res == FR_OK)
     { 
+        if(current_page > 0)
+        {
+            int files_to_skip;
+            
+            if(dir_level > 0)   
+                files_to_skip = current_page * (MAX_DIR_ENTRYS -1);
+            else
+                files_to_skip = current_page * MAX_DIR_ENTRYS;
+
+            for(int i=0; i<files_to_skip; i++)
+            {
+                res = f_readdir(&dir, &fno);
+                if(res != FR_OK || fno.fname[0] == 0) break;
+            }
+        }
+
         nfile = ndir = 0;
 
         if(dir_level > 0)   // Not root directory
