@@ -33,6 +33,7 @@ FileBrowser::FileBrowser(ST7735_TFT* tft, const char* root_path, const char** al
 
 FileBrowser::~FileBrowser()
 {
+    free(current_path);
 }
 
 // Public functions

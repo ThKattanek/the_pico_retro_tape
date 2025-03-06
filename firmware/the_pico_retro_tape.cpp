@@ -172,15 +172,17 @@ void CheckKeys()
             if(!file_browser->Enter())
             {
                 // Open file
-                char* file = file_browser->GetCurrentFile();
-                printf("Open file %s\n", file);
-                char path[256];
-                sprintf(path, "/c64_tap/%s", file);
-                if (c1530.open_image(path)) {
-                    printf("Successfully opened 1530 image \"%s\"\n", path);
+                char* current_file = file_browser->GetCurrentFile();
+                char* current_path = file_browser->GetCurrentPath();
+
+                printf("Open file %s\n", filename);
+                char filename[MAX_PATH_LENGTH + MAX_FILENAME_LENGTH];
+                sprintf(filename, "%s/%s", current_path, current_file);
+                if (c1530.open_image(filename)) {
+                    printf("Successfully opened 1530 image \"%s\"\n", filename);
                     c1530.stop();
                 } else {
-                    printf("Failed to open 1530 image \"%s\"\n", path);
+                    printf("Failed to open 1530 image \"%s\"\n", filename);
                 }
             }
 
