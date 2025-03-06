@@ -53,6 +53,7 @@ void C1530Class::init_gpios(int read_gpio, int write_gpio, int sense_gpio, int m
     gpio_init(sense_gpio);
     gpio_set_dir(read_gpio, true);
     gpio_set_dir(sense_gpio, true);
+    gpio_put(sense_gpio, false);
 
     // input
     gpio_init(write_gpio);
@@ -194,7 +195,7 @@ void C1530Class::read_start()
         tap_image_pos = 0x14;
             
     gpio_put(read_gpio, true);
-    gpio_put(sense_gpio, false);  
+    gpio_put(sense_gpio, true);  
     add_repeating_timer_us(-1000, timer_callback_send_data, this, &timer);
 
     buffer0_is_ready = false;
@@ -206,7 +207,7 @@ void C1530Class::stop()
 {
     cancel_repeating_timer(&timer);
     gpio_put(read_gpio, true);
-    gpio_put(sense_gpio, true);  
+    gpio_put(sense_gpio, false);  
 }
 
 bool C1530Class::is_tap_end()

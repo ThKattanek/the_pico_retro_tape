@@ -92,9 +92,7 @@ int main()
     gpio_set_dir(KEY_ENTER_GPIO, false);
     gpio_set_pulls(KEY_ENTER_GPIO, false, true);
 
-
     c1530.init_gpios(C1530_TAPE_READ_GPIO, C1530_TAPE_WRITE_GPIO, C1530_TAPE_SENSE_GPIO, C1530_TAPE_MOTOR_GPIO);
-    gpio_put(C1530_TAPE_SENSE_GPIO, true);
 
     if(InitSDCard() == 0)
         sd_card_is_ready = true;
