@@ -14,9 +14,7 @@ test_build:
     permissions:
         contents: read
 steps:
-        - name: Checkout
-            uses: actions/checkout@v4
-
+        - uses: actions/checkout@v4
         - name: Build ThePicoRetroTape Firmware
             id: build
             uses: ThKattanek/the_pico_retro_tape@v1
