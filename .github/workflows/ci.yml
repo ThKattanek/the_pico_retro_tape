@@ -7,33 +7,31 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * *' # Every day at midnight UTC
+
 jobs:
-  build:
+test_build:
+    name: Build ThePicoRetroTape Firmware for RaspberryPi Pico
     runs-on: ubuntu-latest
+    permissions:
+        contents: read
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+        - name: Checkout
+            uses: actions/checkout@v4
 
-      - name: Set up CMake
-        uses: jwlawson/actions-setup-cmake@v1
-        with:
-          cmake-version: '3.20.0'
+        - name: Build ThePicoRetroTape Firmware
+            id: build
+            uses: samyarsadat/Pico-Build-Action@v1
+            with:
+                source_dir: "firmware"
+                output_dir: "build"
+                output_ext: "*.uf2 *.elf *.elf.map *.hex *.bin *.dis"
+                output_ignored_dirs: "_deps"
+                cmake_args: "-DCMAKE_BUILD_TYPE=Release"
 
-      - name: Build and test
-        run: |
-          mkdir build
-          cd build
-          cmake ..
-          make
-          make test
-          make coverage
-          make format
-          make lint
-          make upload
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-report
-          path: build/coverage-report/
+        - name: Upload Build Artifacts
+            uses: actions/upload-artifact@v4
+            with:
+                name: workspace_artifacts
+                path: ${{steps.build.outputs.output_dir}}
+                if-no-files-found: error
