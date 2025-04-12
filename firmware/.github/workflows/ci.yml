@@ -1,7 +1,9 @@
 name: RaspberryPi Pico C++ CI
 on:
   push:
-    branches: [main]
+    branches: 
+      - main
+      - working_branch
   pull_request:
     branches: [main]
   workflow_dispatch:
