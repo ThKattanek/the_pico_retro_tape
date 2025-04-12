@@ -8,15 +8,13 @@ on:
     branches: [main]
 
 jobs:
-test_build:
-    name: Build ThePicoRetroTape Firmware for RaspberryPi Pico
-    runs-on: ubuntu-latest
-    permissions:
-        contents: read
+    build:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
 steps:
         - uses: actions/checkout@v4
-        - id: build
-            uses: ThKattanek/the_pico_retro_tape@v1
+        - uses: ThKattanek/the_pico_retro_tape@v1
             with:
                 source_dir: "firmware"
                 output_dir: "build"
