@@ -15,12 +15,12 @@ jobs:
 steps:
         - uses: actions/checkout@v4
         - uses: ThKattanek/the_pico_retro_tape@v1
-            with:
-                source_dir: "firmware"
-                output_dir: "build"
-                output_ext: "*.uf2 *.elf *.elf.map *.hex *.bin *.dis"
-                output_ignored_dirs: "_deps"
-                cmake_args: "-DCMAKE_BUILD_TYPE=Release"
+        with:
+            source_dir: "firmware"
+            output_dir: "build"
+            output_ext: "*.uf2 *.elf *.elf.map *.hex *.bin *.dis"
+            output_ignored_dirs: "_deps"
+            cmake_args: "-DCMAKE_BUILD_TYPE=Release"
 
         - uses: actions/upload-artifact@v4
             with:
