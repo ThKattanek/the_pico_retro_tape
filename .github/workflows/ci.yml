@@ -6,7 +6,6 @@ on:
       - working_branch
   pull_request:
     branches: [main]
-  workflow_dispatch:
 
 jobs:
 test_build:
@@ -14,14 +13,13 @@ test_build:
     runs-on: ubuntu-latest
     permissions:
         contents: read
-
     steps:
         - name: Checkout
             uses: actions/checkout@v4
 
         - name: Build ThePicoRetroTape Firmware
             id: build
-            uses: samyarsadat/Pico-Build-Action@v1
+            uses: ThKattanek/the_pico_retro_tape@v1
             with:
                 source_dir: "firmware"
                 output_dir: "build"
