@@ -1,0 +1,37 @@
+name: RaspberryPi Pico C++ CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *' # Every day at midnight UTC
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up CMake
+        uses: jwlawson/actions-setup-cmake@v1
+        with:
+          cmake-version: '3.20.0'
+
+      - name: Build and test
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make
+          make test
+          make coverage
+          make format
+          make lint
+          make upload
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: build/coverage-report/
