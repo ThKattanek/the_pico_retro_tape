@@ -15,8 +15,7 @@ test_build:
         contents: read
 steps:
         - uses: actions/checkout@v4
-        - name: Build ThePicoRetroTape Firmware
-            id: build
+        - id: build
             uses: ThKattanek/the_pico_retro_tape@v1
             with:
                 source_dir: "firmware"
@@ -25,8 +24,7 @@ steps:
                 output_ignored_dirs: "_deps"
                 cmake_args: "-DCMAKE_BUILD_TYPE=Release"
 
-        - name: Upload Build Artifacts
-            uses: actions/upload-artifact@v4
+        - uses: actions/upload-artifact@v4
             with:
                 name: workspace_artifacts
                 path: ${{steps.build.outputs.output_dir}}
