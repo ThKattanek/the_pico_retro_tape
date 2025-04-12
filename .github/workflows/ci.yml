@@ -11,7 +11,7 @@ jobs:
     build:
         runs-on: ubuntu-latest
         permissions:
-            contents: read
+        contents: read
 steps:
         - uses: actions/checkout@v4
         - uses: ThKattanek/the_pico_retro_tape@v1
