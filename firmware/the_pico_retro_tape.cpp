@@ -14,8 +14,10 @@
 #include <pico/stdlib.h>
 #include <hardware/timer.h>
 #include <hardware/clocks.h>
+#include "verison.h"
 #include "sd_card.h"
 #include "ff.h"
+#include "logo_fw.h"
 
 //#include "tap_images/ggs.h"           // the great giana sisters
 //#include "tap_images/aargh_tap.h"     // aargh!
@@ -60,28 +62,12 @@ void CheckKeys();
 int InitSDCard();
 void InitTFTDisplay(ST7735_TFT *tft);
 void ReleaseSDCard();
+void ViewStartScreen(ST7735_TFT *tft, uint8_t* logo_data, char* fw_version);
 
 int main()
 {
     // Set system clock to 200 MHz
-    // set_sys_clock_khz(220000, true);
-    
-    stdio_init_all();
-
-    // Überprüfen Sie die tatsächliche Taktfrequenz
-    uint32_t freq = clock_get_hz(clk_sys);
-    printf("System clock set to %lu Hz\n", freq);
-
-    //  PlayButton is Input an set pull down
-    gpio_init(PLAY_BUTTON_GPIO);
-    gpio_set_dir(PLAY_BUTTON_GPIO, false);
-    gpio_set_pulls(PLAY_BUTTON_GPIO, false, true);
-
-    //  KeyUp is Input an set pull down
-    gpio_init(KEY_UP_GPIO);
-    gpio_set_dir(KEY_UP_GPIO, false);
-    gpio_set_pulls(KEY_UP_GPIO, false, true);
-
+    // set_sys_clock_khz(220000, true);/home/thorsten/Elektronik/Projekte/the_pico_retro_tape/doc/logo_fw.h
     //  KeyDown is Input an set pull down
     gpio_init(KEY_DOWN_GPIO);
     gpio_set_dir(KEY_DOWN_GPIO, false);
@@ -100,7 +86,10 @@ int main()
         sd_card_is_ready = false;
 
     InitTFTDisplay(&tft);
-    
+
+    // Display the logo from flash memory
+    ViewStartScreen(&tft, (uint8_t*)logo_data, VERSION_STRING);
+
     tft.TFTFontNum(TFT_FONT_TYPE_e::TFTFont_Default);
 	tft.TFTfillScreen(ST7735_BLACK);
 	tft.setTextColor(0xffff, 0x0000);
@@ -278,4 +267,21 @@ void InitTFTDisplay(ST7735_TFT *tft)
 
 // ******** USER OPTION 3 PCB_TYPE  **************************
 	tft->TFTInitPCBType(TFT_PCBtype_e::TFT_ST7735S_Black); // pass enum,4 choices,see README
+}
+
+void ViewStartScreen(ST7735_TFT *tft, uint8_t* logo_data, char* fw_version)
+{
+    tft->TFTfillScreen(ST7735_BLACK);
+    tft->TFTdrawBitmap24Data(0, 0, logo_data, 128, 160); // Adjust dimensions as per your BMP
+    sleep_ms(1000); 
+
+    uint16_t color;
+    uint8_t r = 0xec;
+    uint8_t g = 0xee;
+    uint8_t b = 0xed;
+    color = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+
+    tft->TFTdrawText(18, 140, "Firmware: ", ST7735_GREY, color, 1);
+    tft->TFTdrawText(75, 140, fw_version, ST7735_GREY, color, 1);
+    sleep_ms(3000); // Display the logo for 3 seconds
 }
