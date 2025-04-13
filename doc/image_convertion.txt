@@ -1,0 +1,4 @@
+- created with gimp
+- export as png in 160x128
+- open with png in gimp and export as "Rohdaten des Bildes" .data with R,G,B and normal palettentyp (vorher Alphakanal entfernen)
+- convert with data2c -> data2c logo_fw.data logo_fw.h logo_data
