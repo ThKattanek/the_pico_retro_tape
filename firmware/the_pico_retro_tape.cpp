@@ -37,10 +37,10 @@ bool    sd_card_is_ready;
 
 // Keys
 #define KEY_WAIT 10000          // Tasten Entprellen
-#define PLAY_BUTTON_GPIO   20
 #define KEY_UP_GPIO        6
 #define KEY_DOWN_GPIO      7
 #define KEY_ENTER_GPIO     8
+#define PLAY_BUTTON_GPIO   9
 
 ///// for commodore datasette 1530 support
 
