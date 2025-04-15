@@ -27,7 +27,7 @@ ThePicoRetroTape ist ein Projekt von Thorsten Kattanek, das einen Raspberry Pi P
 
 | Funktion           | Pin am Pico | GPIO-Nummer |
 |--------------------|-------------|-------------|
-| Play Button        | 26          | 20          |
+| Play Button        | 12          | 9           |
 | Key Up             | 9           | 6           |
 | Key Down           | 10          | 7           |
 | Key Enter          | 11          | 8           |
