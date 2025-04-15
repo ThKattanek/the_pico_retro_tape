@@ -23,6 +23,10 @@ ThePicoRetroTape ist ein Projekt von Thorsten Kattanek, das einen Raspberry Pi P
 - Tasten (Play, Up, Down, Enter)
 - Commodore C64 / C128 / VC-20 / C16 / PET
 
+Hier der Steckbrett Aufbau
+
+![thepicoretrotape_breadboard](https://github.com/user-attachments/assets/9166438d-356d-4b8b-a52a-4e88300c124e)
+
 ### Pinbelegung
 
 | Funktion           | Pin am Pico | GPIO-Nummer |
