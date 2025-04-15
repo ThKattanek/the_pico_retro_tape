@@ -21,7 +21,7 @@ ThePicoRetroTape ist ein Projekt von Thorsten Kattanek, das einen Raspberry Pi P
 - ST7735 TFT-Display
 - SD-Kartenmodul
 - Tasten (Play, Up, Down, Enter)
-- Commodore C64
+- Commodore C64 / C128 / VC-20 / C16 / PET
 
 ### Pinbelegung
 
