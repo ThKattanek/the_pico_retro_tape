@@ -1,4 +1,5 @@
 # ThePicoRetroTape
+![Logo](doc/logo_ai/logo_trans_background.png)
 
 ThePicoRetroTape ist ein Projekt von Thorsten Kattanek, das einen Raspberry Pi Pico verwendet, um TAP-Dateien für den Commodore Datasette 1530 zu lesen und anzuzeigen. Das Projekt umfasst die Verwendung eines ST7735-TFT-Displays zur Anzeige von Dateiinformationen und die Steuerung über Tasten.
 
