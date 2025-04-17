@@ -155,18 +155,23 @@ void CheckKeys()
             printf("Enter Button is pressed!\n");
             if(!file_browser->Enter())
             {
-                // Open file
                 char* current_file = file_browser->GetCurrentFile();
                 char* current_path = file_browser->GetCurrentPath();
 
-                printf("Open file %s\n", current_file);
-                char filename[MAX_PATH_LENGTH + MAX_FILENAME_LENGTH];
-                sprintf(filename, "%s/%s", current_path, current_file);
-                if (c1530.open_tap_image(filename)) {
-                    printf("Successfully opened 1530 image \"%s\"\n", filename);
-                    c1530.stop();
-                } else {
-                    printf("Failed to open 1530 image \"%s\"\n", filename);
+                // Open file
+                if(file_browser->CheckFileExtension(".tap"))
+                {
+                    printf("This is a TAP file\n");
+
+                    printf("Open file %s\n", current_file);
+                    char filename[MAX_PATH_LENGTH + MAX_FILENAME_LENGTH];
+                    sprintf(filename, "%s/%s", current_path, current_file);
+                    if (c1530.open_tap_image(filename)) {
+                        printf("Successfully opened tape 1530 image \"%s\"\n", filename);
+                        c1530.stop();
+                    } else {
+                        printf("Failed to open tape 1530 image \"%s\"\n", filename);
+                    }
                 }
             }
 
