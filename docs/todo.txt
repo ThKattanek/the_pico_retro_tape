@@ -6,6 +6,8 @@ C64 PRG mit Schnelllader senden                                              [ ]
 C64 PRG vor dem senden komprimieren                                          [ ]
 C64 T64 senden (ähnlich PRG)                                                 [ ]
 D64 untersützen um einzelne Daten zu senden                                  [ ]
+Nach Auswahl eines TAP sprung in Countermodus                                [ ]
+    (Enter wieder raus, Hoch, Runter = vorwärts + rückwärts)
 Cover Modus einbauen - Statt Filebrowser Images anzeigen                     [ ]
 Wechsel zwischen Covermodus und Browsermodus                                 [ ]
 SD-CARD anbinden                                                             [x]
