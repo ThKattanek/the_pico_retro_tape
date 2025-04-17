@@ -43,7 +43,17 @@ public:
     C1530Class();
     void init_gpios(int read_gpio, int write_gpio, int sense_gpio, int motor_gpio);
     void update();  // tap datas from memory
-    bool open_tap_image(char* filename);   // from sd card
+    
+    /**
+     * @brief Opens a TAP image file from the SD card.
+     *
+     * This function opens a TAP image file from the SD card and prepares it for reading.
+     * It initializes the necessary structures and sets up the file pointer for reading.
+     *
+     * @param filename The name of the TAP image file to open.
+     * @return true if the file was successfully opened, false otherwise.
+     */
+    bool open_tap_image(char* filename);  // from SD card
    
     /**
      * @brief Opens an image from a memory buffer.
@@ -62,6 +72,8 @@ public:
      * It ensures that all resources associated with the file are properly released.
      */
     void close_image();
+
+    bool open_prg_image(char* filename);  // from SD card
     
     /**
      * @brief Initiates the read process.

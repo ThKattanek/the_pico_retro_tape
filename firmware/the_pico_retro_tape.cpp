@@ -61,7 +61,7 @@ void CheckKeys();
 int InitSDCard();
 void InitTFTDisplay(ST7735_TFT *tft);
 void ReleaseSDCard();
-void ViewStartScreen(ST7735_TFT *tft, uint8_t* logo_data, char* fw_version);
+void ViewStartScreen(ST7735_TFT *tft, uint8_t* logo_data, const char* fw_version);
 
 int main()
 {
@@ -162,7 +162,6 @@ void CheckKeys()
                 if(file_browser->CheckFileExtension(".tap"))
                 {
                     printf("This is a TAP file\n");
-
                     printf("Open file %s\n", current_file);
                     char filename[MAX_PATH_LENGTH + MAX_FILENAME_LENGTH];
                     sprintf(filename, "%s/%s", current_path, current_file);
@@ -172,9 +171,20 @@ void CheckKeys()
                     } else {
                         printf("Failed to open tape 1530 image \"%s\"\n", filename);
                     }
+                }else if(file_browser->CheckFileExtension(".prg"))
+                {
+                    printf("This is a PRG file\n");
+                    printf("Open file %s\n", current_file);
+                    char filename[MAX_PATH_LENGTH + MAX_FILENAME_LENGTH];
+                    sprintf(filename, "%s/%s", current_path, current_file);
+                    if (c1530.open_prg_image(filename)) {
+                        printf("Successfully opened prg file \"%s\"\n", filename);
+                        c1530.stop();
+                    } else {
+                        printf("Failed to open prg file \"%s\"\n", filename);
+                    }
                 }
             }
-
             /*
             if(dir_entrys_is_dir[dir_entrys_pos])
             {
@@ -269,7 +279,7 @@ void InitTFTDisplay(ST7735_TFT *tft)
 	tft->TFTInitPCBType(TFT_PCBtype_e::TFT_ST7735S_Black); // pass enum,4 choices,see README
 }
 
-void ViewStartScreen(ST7735_TFT *tft, uint8_t* logo_data, char* fw_version)
+void ViewStartScreen(ST7735_TFT *tft, uint8_t* logo_data, const char* fw_version)
 {
     tft->TFTfillScreen(ST7735_BLACK);
     tft->TFTdrawBitmap24Data(0, 0, logo_data, 128, 160); // Adjust dimensions as per your BMP
@@ -281,7 +291,7 @@ void ViewStartScreen(ST7735_TFT *tft, uint8_t* logo_data, char* fw_version)
     uint8_t b = 0xed;
     color = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
 
-    tft->TFTdrawText(18, 140, "Firmware: ", ST7735_GREY, color, 1);
-    tft->TFTdrawText(75, 140, fw_version, ST7735_GREY, color, 1);
+    tft->TFTdrawText(18, 140, (char*)"Firmware: ", ST7735_GREY, color, 1);
+    tft->TFTdrawText(75, 140, (char*)fw_version, ST7735_GREY, color, 1);
     sleep_ms(3000); // Display the logo for 3 seconds
 }

@@ -136,6 +136,26 @@ bool C1530Class::open_tap_image(const uint8_t* image_buffer, u_int image_buffer_
     return true;
 }
 
+bool C1530Class::open_prg_image(char* filename)
+{
+    FRESULT fr;
+    UINT read_bytes;
+
+    if(filename == nullptr)
+        return false;
+
+    fr = f_open(&file, filename, FA_READ);
+    if(fr == FR_OK)
+    {
+        image_source = IMAGE_SOURCE::SDCARD;
+        image_type = IMAGE_TYPE::TAP;
+
+        return true;
+    }
+
+    return false;
+}
+
 void C1530Class::close_image()
 {
     is_tape_insert = false;
