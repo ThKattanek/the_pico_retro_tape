@@ -43,7 +43,7 @@ public:
     C1530Class();
     void init_gpios(int read_gpio, int write_gpio, int sense_gpio, int motor_gpio);
     void update();  // tap datas from memory
-    bool open_image(char* filename);   // from sd card
+    bool open_tap_image(char* filename);   // from sd card
    
     /**
      * @brief Opens an image from a memory buffer.
@@ -53,7 +53,7 @@ public:
      * @param type The type of the image.
      * @return true if the image was successfully opened, false otherwise.
      */
-    bool open_image(const uint8_t* image_buffer, UINT image_buffer_size, IMAGE_TYPE type);  // from memory
+    bool open_tap_image(const uint8_t* image_buffer, UINT image_buffer_size, IMAGE_TYPE type);  // from memory
     
     /**
      * @brief Closes the currently open image file.

@@ -69,7 +69,7 @@ void C1530Class::init_gpios(int read_gpio, int write_gpio, int sense_gpio, int m
     this->motor_gpio = motor_gpio;
 }
 
-bool C1530Class::open_image(char* filename)
+bool C1530Class::open_tap_image(char* filename)
 {
     FRESULT fr;
     UINT read_bytes;
@@ -113,7 +113,7 @@ bool C1530Class::open_image(char* filename)
     return true;
 }
 
-bool C1530Class::open_image(const uint8_t* image_buffer, u_int image_buffer_size, IMAGE_TYPE type)
+bool C1530Class::open_tap_image(const uint8_t* image_buffer, u_int image_buffer_size, IMAGE_TYPE type)
 {
     if(image_buffer == nullptr)
         return false;

@@ -67,10 +67,10 @@ int main()
 {
     // Set system clock to 200 MHz
     // set_sys_clock_khz(220000, true);/home/thorsten/Elektronik/Projekte/the_pico_retro_tape/doc/logo_fw.h
-    //  KeyDown is Input an set pull down
 
     stdio_init_all();
 
+    // KeyDown is Input an set pull down
     gpio_init(KEY_DOWN_GPIO);
     gpio_set_dir(KEY_DOWN_GPIO, false);
     gpio_set_pulls(KEY_DOWN_GPIO, false, true);
@@ -162,7 +162,7 @@ void CheckKeys()
                 printf("Open file %s\n", current_file);
                 char filename[MAX_PATH_LENGTH + MAX_FILENAME_LENGTH];
                 sprintf(filename, "%s/%s", current_path, current_file);
-                if (c1530.open_image(filename)) {
+                if (c1530.open_tap_image(filename)) {
                     printf("Successfully opened 1530 image \"%s\"\n", filename);
                     c1530.stop();
                 } else {
