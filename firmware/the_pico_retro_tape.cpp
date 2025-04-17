@@ -26,7 +26,6 @@
 
 // SD Card
 char buf[100];
-char filename[] = "/c64_tap/Demos [ABC].tap";
 
 const char* allowed_extensions[] = {".tap", ".t64", ".prg"};
 
@@ -101,13 +100,6 @@ int main()
 
     file_browser = new FileBrowser(&tft, "/", allowed_extensions, 3);
 
-    // Open a tap image with the c1530 class and print corresponding message
-    if (c1530.open_image(filename)) {
-        printf("Successfully opened 1530 image \"%s\"\n", filename);
-    } else {
-        printf("Failed to open 1530 image \"%s\"\n", filename);
-    }
-
     while (true) 
     {
         CheckKeys();
@@ -167,7 +159,7 @@ void CheckKeys()
                 char* current_file = file_browser->GetCurrentFile();
                 char* current_path = file_browser->GetCurrentPath();
 
-                printf("Open file %s\n", filename);
+                printf("Open file %s\n", current_file);
                 char filename[MAX_PATH_LENGTH + MAX_FILENAME_LENGTH];
                 sprintf(filename, "%s/%s", current_path, current_file);
                 if (c1530.open_image(filename)) {
