@@ -82,7 +82,7 @@ bool C1530Class::open_image(char* filename)
     {
         // prüfen ob es sich um ein TAP-File handelt
         fr = f_read(&file, &tap_header, sizeof(TAPHeader), &read_bytes);
-        if(fr != FR_OK && read_bytes != sizeof(TAPHeader))
+        if(fr != FR_OK || read_bytes != sizeof(TAPHeader))
         {
             printf("Error reading TAP-Header\n");
             f_close(&file);
