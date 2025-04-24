@@ -580,7 +580,7 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
             // Sync send short pulse
             pulse = SHORT_PULSE >> 1;   // 1/2
             sync_pulse_counter++;
-            if(sync_pulse_counter > 27135)
+            if(sync_pulse_counter > 27135/5)
             {
                 sync_pulse_counter = 0;
                 prg_send_state++;
