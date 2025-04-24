@@ -10,11 +10,6 @@
 //                                                    //
 //////////////////////////////////////////////////////// 
 
-// before commit send_prg
-// - fix load error -> is now fixed !
-// - kernal header add prg filename 
-// - testing with many prg files and more c64
-
 #include <stdio.h>
 #include <pico/stdlib.h>
 #include "sd_card.h"
