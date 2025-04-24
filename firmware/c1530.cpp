@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////// 
 
 // before commit send_prg
-// - fix load error
+// - fix load error -> is now fixed !
 // - kernal header add prg filename 
 // - testing with many prg files and more c64
 
@@ -411,14 +411,14 @@ void C1530Class::fill_send_buffer_from_file()
             if(tap_image_pos >= tap_header.data_length)
             {
                 //stop();
-                while(i<256)
-                    send_buffer[i++] = 0;
-                tap_image_is_end = true;
-                break;
+                //while(i<256)
+                    //send_buffer[i++] = 0;
+                pulse = 0;
+                //tap_image_is_end = true;
+                //break;
             }
-
-            send_buffer[i+0] = pulse;
-            send_buffer[i+1] = pulse;
+                send_buffer[i+0] = pulse;
+                send_buffer[i+1] = pulse;
         }
 
         buffer1_is_ready = true;
@@ -435,14 +435,16 @@ void C1530Class::fill_send_buffer_from_file()
             if(tap_image_pos >= tap_header.data_length)
             {
                 //stop();
-                while(i<128)
-                    send_buffer[i++] = 0;
-                tap_image_is_end = true;
-                break;
+                //while(i<256)
+                    //send_buffer[i++] = 0;
+                    pulse = 0;
+                    //tap_image_is_end = true;
+                    //break;
             }
-
+            
             send_buffer[i+0] = pulse;
             send_buffer[i+1] = pulse;
+            
         }
 
         buffer0_is_ready = true;
