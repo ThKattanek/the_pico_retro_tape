@@ -17,6 +17,7 @@
 #include "./c1530.h"
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 
 bool timer_callback_send_data(__unused struct repeating_timer *t) 
 {
@@ -69,7 +70,7 @@ void C1530Class::init_gpios(int read_gpio, int write_gpio, int sense_gpio, int m
     this->motor_gpio = motor_gpio;
 }
 
-bool C1530Class::open_image(char* filename)
+bool C1530Class::open_tap_image(char* filename)
 {
     FRESULT fr;
     UINT read_bytes;
@@ -113,7 +114,7 @@ bool C1530Class::open_image(char* filename)
     return true;
 }
 
-bool C1530Class::open_image(const uint8_t* image_buffer, u_int image_buffer_size, IMAGE_TYPE type)
+bool C1530Class::open_tap_image(const uint8_t* image_buffer, u_int image_buffer_size, IMAGE_TYPE type)
 {
     if(image_buffer == nullptr)
         return false;
@@ -134,6 +135,78 @@ bool C1530Class::open_image(const uint8_t* image_buffer, u_int image_buffer_size
     }
     
     return true;
+}
+
+bool C1530Class::open_prg_image(char* filename)
+{
+    FRESULT fr;
+    UINT read_bytes;
+
+    if(filename == nullptr)
+        return false;
+
+    fr = f_open(&file, filename, FA_READ);
+    if(fr == FR_OK)
+    {
+        image_source = IMAGE_SOURCE::SDCARD;
+        image_type = IMAGE_TYPE::PRG;
+        
+        prg_send_pos = 0;
+        prg_send_state = 0;
+        sync_pulse_counter = 0; 
+        countdown_sequence = 0x09;
+        kernal_header_block_pos = 0;
+        one_byte_pulse_buffer_pos = 0;
+
+        is_tape_insert = true;
+
+        prg_size = f_size(&file);
+        prg_size -= 2; // 2 Bytes for the start address
+
+        f_read(&file, &kernal_header_block.start_address_low, 1, &read_bytes);
+        f_read(&file, &kernal_header_block.start_address_high, 1, &read_bytes);
+        
+        f_lseek(&file, 2);
+
+        uint16_t temp_address = (kernal_header_block.start_address_low | (kernal_header_block.start_address_high << 8));
+        uint16_t end_adress = static_cast<uint16_t>(temp_address);
+        end_adress += static_cast<uint16_t>(prg_size);
+        kernal_header_block.end_address_low = static_cast<uint8_t>(end_adress & 0x00FF);
+        kernal_header_block.end_address_high = static_cast<uint8_t>((end_adress >> 8) & 0x00FF);
+
+        kernal_header_block.header_type = 0x01; // Kernal Header Block
+        memset(kernal_header_block.filename_dispayed, 0x20, sizeof(kernal_header_block.filename_dispayed));
+        memset(kernal_header_block.filename_not_displayed, 0x20, sizeof(kernal_header_block.filename_not_displayed));
+
+        // Extract the filename from the full path and convert to uppercase
+        const char* base_filename = strrchr(filename, '/');
+        base_filename = (base_filename != nullptr) ? base_filename + 1 : filename;
+
+        // Remove the ".prg" extension if present
+        char temp_filename[sizeof(kernal_header_block.filename_dispayed) + 1] = {0};
+        strncpy(temp_filename, base_filename, sizeof(temp_filename) - 1);
+        char* dot_position = strrchr(temp_filename, '.');
+        if (dot_position && strcmp(dot_position, ".prg") == 0) {
+            *dot_position = '\0'; // Remove the extension
+        }
+
+        // Copy the modified filename to the Kernal Header and convert to uppercase
+        for (size_t i = 0; i < sizeof(kernal_header_block.filename_dispayed) && temp_filename[i] != '\0'; i++) {
+            kernal_header_block.filename_dispayed[i] = toupper(temp_filename[i]);
+        }
+
+        // Calculate checksum
+        checksum = 0;
+        for (int i = 0; i < sizeof(kernal_header_block) - 1; i++)
+        {
+            checksum ^= ((uint8_t*)&kernal_header_block)[i];
+        }
+        kernal_header_block.crc_checksum = checksum;
+        checksum = 0;
+
+        return true;
+    }
+    return false;
 }
 
 void C1530Class::close_image()
@@ -171,11 +244,13 @@ void C1530Class::update()
     if(motor_new_state == true && motor_old_state == false)
     {
         motor_state = true;
+        printf("Motor is ON\n");
     }
 
     if(motor_new_state == false && motor_old_state == true)
     {
         motor_state = false;
+        printf("Motor is OFF\n");
     }
     motor_old_state = motor_new_state;
 }
@@ -271,6 +346,7 @@ void C1530Class::fill_send_buffer_from_memory()
             int32_t pulse = get_next_tap_us_pulse();
             if(tap_image_pos >= tap_data_buffer_size)
             {
+                stop();
                 tap_image_is_end = true;
                 break;
             }
@@ -293,6 +369,7 @@ void C1530Class::fill_send_buffer_from_memory()
             int32_t pulse = get_next_tap_us_pulse();
             if(tap_image_pos >= tap_data_buffer_size)
             {
+                stop();
                 tap_image_is_end = true;
                 break;
             }
@@ -320,57 +397,83 @@ void C1530Class::fill_send_buffer_from_memory()
 }
 
 void C1530Class::fill_send_buffer_from_file()
-{
+{    
     switch (image_type)
     {
     case IMAGE_TYPE::TAP:
-
+    // TAP-File
     if(send_buffer_read_pos == 0 && !buffer1_is_ready)
     {
         // Puffer 1 füllen
-
         for(int i=128; i<256; i+=2)
         {
             int32_t pulse = get_next_tap_us_pulse_from_file();
             if(tap_image_pos >= tap_header.data_length)
             {
-                tap_image_is_end = true;
-                break;
+                pulse = 0;
             }
+                send_buffer[i+0] = pulse;
+                send_buffer[i+1] = pulse;
+        }
 
+        buffer1_is_ready = true;
+        buffer0_is_ready = false;
+        //sleep_us(1);
+    }
+
+    if(send_buffer_read_pos == 128 && !buffer0_is_ready)
+    {
+        // Puffer 0 füllen
+        for(int i=0; i<128; i+=2)
+        {
+            int32_t pulse = get_next_tap_us_pulse_from_file();
+            if(tap_image_pos >= tap_header.data_length)
+            {
+                pulse = 0;
+            }
+            
+            send_buffer[i+0] = pulse;
+            send_buffer[i+1] = pulse;
+            
+        }
+
+        buffer0_is_ready = true;
+        buffer1_is_ready = false;
+        //sleep_us(1);
+    }
+        break;
+    
+    case IMAGE_TYPE::PRG:
+    // PRG-File    
+    if(send_buffer_read_pos == 0 && !buffer1_is_ready)
+    {
+        // Puffer 1 füllen
+        for(int i=128; i<256; i+=2)
+        {
+            int32_t pulse = get_next_prg_us_pulse_from_file();
             send_buffer[i+0] = pulse;
             send_buffer[i+1] = pulse;
         }
 
         buffer1_is_ready = true;
         buffer0_is_ready = false;
-        sleep_us(1);
+        //sleep_us(1);
     }
 
     if(send_buffer_read_pos == 128 && !buffer0_is_ready)
     {
         // Puffer 0 füllen
-
         for(int i=0; i<128; i+=2)
         {
-            int32_t pulse = get_next_tap_us_pulse_from_file();
-            if(tap_image_pos >= tap_header.data_length)
-            {
-                tap_image_is_end = true;
-                break;
-            }
-
+            int32_t pulse = get_next_prg_us_pulse_from_file();
             send_buffer[i+0] = pulse;
             send_buffer[i+1] = pulse;
         }
 
         buffer0_is_ready = true;
         buffer1_is_ready = false;
-        sleep_us(1);
+        //sleep_us(1);
     }
-        break;
-    
-    case IMAGE_TYPE::PRG:
         break;
 
     case IMAGE_TYPE::T64:
@@ -398,6 +501,8 @@ int32_t C1530Class::get_next_tap_us_pulse_from_file()
     }
     else 
     {
+        // Wenn 0 dann die nächsten 3Bytes in unsigned int (32Bit) wandeln
+        // Mit Hilfe eines Zeigers auf cycles
         unsigned char tmp[3];
         f_read(&file, tmp, 3, &read_bytes);
         cycles = (tmp[2] << 16) | (tmp[1] << 8) | tmp[0];
@@ -405,7 +510,7 @@ int32_t C1530Class::get_next_tap_us_pulse_from_file()
         tap_image_pos += 4;
     }
 
-    return pulse * -1;
+    return pulse;
 }
 
 int32_t C1530Class::get_next_tap_us_pulse()
@@ -415,7 +520,6 @@ int32_t C1530Class::get_next_tap_us_pulse()
 
         if(cycles != 0)
         {
-            //pulse = (cycles << 3) * 0.50748644f; 
             pulse = cycles << 2;
             tap_image_pos++;
         }
@@ -427,189 +531,343 @@ int32_t C1530Class::get_next_tap_us_pulse()
             tmp[0] = tap_data_buffer[tap_image_pos + 1];
             tmp[1] = tap_data_buffer[tap_image_pos + 2];
             tmp[2] = tap_data_buffer[tap_image_pos + 3];
-            //pulse = cycles * 0.50748644f;
-            pulse = cycles >> 1;
+            pulse = cycles >> 1;    // 1/2
             tap_image_pos += 4;
         }
 
-        return pulse * -1;
+        return pulse;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//// Experimental
-
-void C1530Class::sync_10sek()
+int32_t C1530Class::get_next_prg_us_pulse_from_file()
 {
-    for(int i=0; i<2840*10; i++)
+    int32_t pulse = 0;
+    uint8_t send_byte;
+    UINT read_bytes;
+
+    switch(prg_send_state)
     {
-        gpio_put(read_gpio, false);
-        sleep_us(SHORT_PULSE);
-        gpio_put(read_gpio, true);
-        sleep_us(SHORT_PULSE);
+        case 0:
+            // Sync send short pulse
+            pulse = SHORT_PULSE >> 1;   // 1/2
+            sync_pulse_counter++;
+            if(sync_pulse_counter > 27135/5)
+            {
+                sync_pulse_counter = 0;
+                prg_send_state++;
+            }
+            break;
+        case 1:
+            // Countdown sequence 0x89 - 0x81
+            if(one_byte_pulse_buffer_pos == 0)
+            {
+                // fill the buffer with the next pulse for the next byte
+                send_byte = countdown_sequence--;
+                send_byte |= 0x80;
+                conv_byte_to_pulses(send_byte, one_byte_pulse_buffer);
+            }
+
+            pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
+            if(one_byte_pulse_buffer_pos == 20)
+            {
+                one_byte_pulse_buffer_pos = 0;
+                if(countdown_sequence == 0x00)
+                {
+                    countdown_sequence = 0x09;
+                    prg_send_state++;
+                }
+            }
+            break;
+        case 2:
+            // Send Kernal Header Block
+            if(one_byte_pulse_buffer_pos == 0)
+            {
+                // fill the buffer with the next pulse for the next byte
+                send_byte = ((uint8_t*)&kernal_header_block)[kernal_header_block_pos++];
+                conv_byte_to_pulses(send_byte, one_byte_pulse_buffer);
+            }
+
+            pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
+            if(one_byte_pulse_buffer_pos == 20)
+            {
+                one_byte_pulse_buffer_pos = 0;
+                if(kernal_header_block_pos == sizeof(kernal_header_block))
+                {
+                    kernal_header_block_pos = 0;
+                    prg_send_state++;
+                }
+            }
+            break;
+        case 3:
+            // EndOfData Maker (LS)
+            pulse = LONG_PULSE >> 1; // long pulse
+            prg_send_state++;
+            break;
+        case 4:
+            // EndOfData Maker (LS)
+            pulse = SHORT_PULSE >> 1; // short pulse
+            prg_send_state++;
+            break;
+        case 5:
+            // Sync send short pulse
+            pulse = SHORT_PULSE >> 1;   // 1/2
+            sync_pulse_counter++;
+            if(sync_pulse_counter > 79)
+            {
+                sync_pulse_counter = 0;
+                prg_send_state++;
+            }
+            break;
+        case 6:
+            // Countdown sequence 0x09 - 0x01
+            if(one_byte_pulse_buffer_pos == 0)
+            {
+                // fill the buffer with the next pulse for the next byte
+                send_byte = countdown_sequence--;
+                conv_byte_to_pulses(send_byte , one_byte_pulse_buffer);
+            }
+
+            pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
+            if(one_byte_pulse_buffer_pos == 20)
+            {
+                one_byte_pulse_buffer_pos = 0;
+                if(countdown_sequence == 0x00)
+                {
+                    countdown_sequence = 0x09;
+                    prg_send_state++;
+                }
+            }
+            break;
+        case 7:
+            // Send Kernal Header Block
+            if(one_byte_pulse_buffer_pos == 0)
+            {
+                // fill the buffer with the next pulse for the next byte
+                send_byte = ((uint8_t*)&kernal_header_block)[kernal_header_block_pos++];
+                conv_byte_to_pulses(send_byte, one_byte_pulse_buffer);
+            }
+
+            pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
+            if(one_byte_pulse_buffer_pos == 20)
+            {
+                one_byte_pulse_buffer_pos = 0;
+                if(kernal_header_block_pos == sizeof(kernal_header_block))
+                {
+                    kernal_header_block_pos = 0;
+                    prg_send_state++;
+                }
+            }
+            break;
+        case 8:
+            // Sync send short pulse
+            pulse = SHORT_PULSE >> 1;   // 1/2
+            sync_pulse_counter++;
+            if(sync_pulse_counter > 5671)
+            {
+                checksum = 0;
+                sync_pulse_counter = 0;
+                prg_send_state++;
+            }
+            break;
+        case 9:
+            // Countdown sequence 0x89 - 0x81
+            if(one_byte_pulse_buffer_pos == 0)
+            {
+                // fill the buffer with the next pulse for the next byte
+                send_byte = countdown_sequence--;
+                send_byte |= 0x80;
+                conv_byte_to_pulses(send_byte, one_byte_pulse_buffer);
+            }
+
+            pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
+            if(one_byte_pulse_buffer_pos == 20)
+            {
+                one_byte_pulse_buffer_pos = 0;
+                if(countdown_sequence == 0x00)
+                {
+                    countdown_sequence = 0x09;
+                    prg_send_state++;
+                }
+            }
+            break;
+        case 10:
+            // Send Data
+            if(one_byte_pulse_buffer_pos == 0)
+            {
+                // fill the buffer with the next pulse for the next byte
+                f_read(&file, &send_byte, 1, &read_bytes);
+                if(read_bytes == 1)
+                {
+                    checksum ^= send_byte;
+                    conv_byte_to_pulses(send_byte , one_byte_pulse_buffer);
+                    prg_send_pos++;
+                }
+                else
+                {
+                    pulse = 0;
+                    prg_send_state = 100;
+                }
+            }
+
+            pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
+            if(one_byte_pulse_buffer_pos == 20)
+            {
+                one_byte_pulse_buffer_pos = 0;
+                if(prg_send_pos == prg_size)
+                {
+                    conv_byte_to_pulses(checksum , one_byte_pulse_buffer);
+                    prg_send_pos = 0;
+                    prg_send_state++;
+                }
+            }
+
+            break;
+        case 11:
+            pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
+            if(one_byte_pulse_buffer_pos == 20)
+            {
+                f_lseek(&file, 2); // Set file position to the start of the tape data
+                one_byte_pulse_buffer_pos = 0;
+                checksum = 0;
+                prg_send_state++;
+            }   
+            break;
+        case 12:
+            // EndOfData Maker (LS)
+            pulse = LONG_PULSE >> 1; // long pulse
+            prg_send_state++;
+            break;
+        case 13:
+            // EndOfData Maker (LS)
+            pulse = SHORT_PULSE >> 1; // short pulse
+            prg_send_state++;
+            break;
+        case 14:
+            // Sync send short pulse
+            pulse = SHORT_PULSE >> 1;   // 1/2
+            sync_pulse_counter++;
+            if(sync_pulse_counter > 79)
+            {
+                sync_pulse_counter = 0;
+                prg_send_state++;
+            }
+            break;
+        case 15:
+            // Countdown sequence 0x09 - 0x01
+            if(one_byte_pulse_buffer_pos == 0)
+            {
+                // fill the buffer with the next pulse for the next byte
+                send_byte = countdown_sequence--;
+                conv_byte_to_pulses(send_byte , one_byte_pulse_buffer);
+            }
+
+            pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
+            if(one_byte_pulse_buffer_pos == 20)
+            {
+                one_byte_pulse_buffer_pos = 0;
+                if(countdown_sequence == 0x00)
+                {
+                    countdown_sequence = 0x09;
+                    prg_send_state++;
+                }
+            }
+            break;
+        case 16:
+            // Send Data
+            if(one_byte_pulse_buffer_pos == 0)
+            {
+                // fill the buffer with the next pulse for the next byte
+                f_read(&file, &send_byte, 1, &read_bytes);
+                if(read_bytes == 1)
+                {
+                    checksum ^= send_byte;
+                    conv_byte_to_pulses(send_byte , one_byte_pulse_buffer);
+                    prg_send_pos++;
+                }
+                else
+                {
+                    pulse = 0;
+                    prg_send_state = 100;
+                }
+            }
+
+            pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
+            if(one_byte_pulse_buffer_pos == 20)
+            {
+                one_byte_pulse_buffer_pos = 0;
+                if(prg_send_pos == prg_size)
+                {
+                    conv_byte_to_pulses(checksum , one_byte_pulse_buffer);
+                    prg_send_pos = 0;
+                    prg_send_state++;
+                }
+            }
+
+            break;
+        case 17:
+            pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
+            if(one_byte_pulse_buffer_pos == 20)
+            {
+                f_lseek(&file, 2); // Set file position to the start of the tape data
+                checksum = 0;
+                prg_send_state++;
+            }   
+            break;
+        case 18:
+            // EndOfData Maker (LS)
+            pulse = LONG_PULSE >> 1; // long pulse
+            prg_send_state++;
+            break;
+        case 19:
+            // EndOfData Maker (LS)
+            pulse = SHORT_PULSE >> 1; // short pulse
+            prg_send_state = 100;
+            break;
+        case 100:
+            printf("End of PRG-File\n");
+            break;
     }
+
+    return pulse;
 }
 
-void C1530Class::send_byte(uint8_t byte)
+inline void C1530Class::conv_byte_to_pulses(uint32_t byte, uint32_t *pulses)
 {
+    int pos = 0;
+
     // ByteMaker
-    gpio_put(read_gpio, false);
-    sleep_us(LONG_PULSE);
-    gpio_put(read_gpio, true);
-    sleep_us(LONG_PULSE);
-    gpio_put(read_gpio, false);
-    sleep_us(MEDIUM_PULSE);
-    gpio_put(read_gpio, true);
-    sleep_us(MEDIUM_PULSE);
+    pulses[pos++] = LONG_PULSE >> 1;     // long pulse
+    pulses[pos++] = MEDIUM_PULSE >> 1;   // medium pulse
 
-    // Byte
-    uint8_t bit_mask = 1;
-    for(int i=0; i<8; i++)
+    // Write the bits of the byte (LSB first)
+    uint8_t parity_bit = 1;
+    for (int i = 0; i < 8; ++i)     
     {
-        if(byte & bit_mask)
+        if (byte & (1 << i)) 
         {
-            // 1-bit
-            gpio_put(read_gpio, false);
-            sleep_us(MEDIUM_PULSE);
-            gpio_put(read_gpio, true);
-            sleep_us(MEDIUM_PULSE);
-            gpio_put(read_gpio, false);
-            sleep_us(SHORT_PULSE);
-            gpio_put(read_gpio, true);
-            sleep_us(SHORT_PULSE);
-        }
-        else
+            // Bit is 1
+            pulses[pos++] = MEDIUM_PULSE >> 1; // medium pulse
+            pulses[pos++] = SHORT_PULSE >> 1;  // short pulse
+            parity_bit ^= 1;
+        } else 
         {
-            // 0-bit
-            gpio_put(read_gpio, false);
-            sleep_us(SHORT_PULSE);
-            gpio_put(read_gpio, true);
-            sleep_us(SHORT_PULSE);
-            gpio_put(read_gpio, false);
-            sleep_us(MEDIUM_PULSE);
-            gpio_put(read_gpio, true);
-            sleep_us(MEDIUM_PULSE);
+            // Bit is 0
+            pulses[pos++] = SHORT_PULSE >> 1;  // short pulse
+            pulses[pos++] = MEDIUM_PULSE >> 1; // medium pulse
         }
-
-        bit_mask <<= 1;
     }
 
-    if((byte % 2) == 0)
+    // Write the parity bit (odd parity)
+    if (parity_bit == 1) 
     {
-        // gerade anzahl von 1 Bits
-        // Parity Bit = 1    
-        gpio_put(read_gpio, false);
-        sleep_us(MEDIUM_PULSE);
-        gpio_put(read_gpio, true);
-        sleep_us(MEDIUM_PULSE);
-        gpio_put(read_gpio, false);
-        sleep_us(SHORT_PULSE);
-        gpio_put(read_gpio, true);
-        sleep_us(SHORT_PULSE);
-    }
-    else
+        // Even number of 1 bits
+        // Parity Bit = 1
+        pulses[pos++] = MEDIUM_PULSE >> 1; // medium pulse
+        pulses[pos++] = SHORT_PULSE >> 1;  // short pulse
+    } else 
     {
-        // ungerade anzahl von 1 Bits
+        // Odd number of 1 bits
         // Parity Bit = 0
-        gpio_put(read_gpio, false);
-        sleep_us(SHORT_PULSE);
-        gpio_put(read_gpio, true);
-        sleep_us(SHORT_PULSE);
-        gpio_put(read_gpio, false);
-        sleep_us(MEDIUM_PULSE);
-        gpio_put(read_gpio, true);
-        sleep_us(MEDIUM_PULSE);
+        pulses[pos++] = SHORT_PULSE >> 1;  // short pulse
+        pulses[pos++] = MEDIUM_PULSE >> 1; // medium pulse
     }
 }
-
-void C1530Class::send_test()
-{
-    struct C64_HEADER header;
-
-    header.HeaderType = 0x01;
-    header.StartAddressHighByte = 0x08;
-    header.StartAddressLowByte = 0x01;
-    header.EndAddressHighByte = 0x10;
-    header.EndAddressLowByte = 0x00;
-    
-    for(int i=0; i<16; i++)
-        header.Filename1[i] = 0x20;
-
-    header.Filename1[0] = 'A';
-
-    uint8_t *buffer = (uint8_t*)&header;
-
-    // 10sec Sync
-    sync_10sek();
-
-    // 1. Countdown sequence
-    for(uint8_t c_byte = 0x89; c_byte >= 0x81; c_byte--)
-        send_byte(c_byte);
-
-    // send 192 bytes data
-    uint8_t checksum = 0;
-    for(int i=0; i < (int)sizeof(header); i++)
-    {
-        checksum ^= buffer[i];
-        send_byte(buffer[i]);
-    }
-
-    // send the checksum
-    send_byte(checksum);
-
-    // long pulse
-    gpio_put(read_gpio, false);
-    sleep_us(LONG_PULSE);
-    gpio_put(read_gpio, true);
-    sleep_us(LONG_PULSE);
-
-    // 60 Sync Short Pulse
-    for(int i=0; i<30; i++)
-    {
-        gpio_put(read_gpio, false);
-        sleep_us(SHORT_PULSE);
-        gpio_put(read_gpio, true);
-        sleep_us(SHORT_PULSE);
-    }
-
-     // 2. Countdown sequence
-    for(uint8_t c_byte = 0x09; c_byte >= 0x01; c_byte--)
-        send_byte(c_byte);
-
-    // send 192 bytes data
-    checksum = 0;
-    for(int i=0; i < (int)sizeof(header); i++)
-    {
-        checksum ^= buffer[i];
-        send_byte(buffer[i]);
-    }
-
-    // send the checksum
-    send_byte(checksum);
-
-    // End-of-data MArke
-    gpio_put(read_gpio, false);
-    sleep_us(LONG_PULSE);
-    gpio_put(read_gpio, true);
-    sleep_us(LONG_PULSE);
-    gpio_put(read_gpio, false);
-    sleep_us(SHORT_PULSE);
-    gpio_put(read_gpio, true);
-    sleep_us(SHORT_PULSE);
-
-    // long pulse
-    gpio_put(read_gpio, false);
-    sleep_us(LONG_PULSE);
-    gpio_put(read_gpio, true);
-    sleep_us(LONG_PULSE);
-
-    // 60 Sync Short Pulse
-    for(int i=0; i<30; i++)
-    {
-        gpio_put(read_gpio, false);
-        sleep_us(SHORT_PULSE);
-        gpio_put(read_gpio, true);
-        sleep_us(SHORT_PULSE);
-    }
-}
-

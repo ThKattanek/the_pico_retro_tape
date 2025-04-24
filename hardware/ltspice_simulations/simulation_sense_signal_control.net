@@ -1,0 +1,13 @@
+* Z:\home\thorsten\Elektronik\Projekte\the_pico_retro_tape\hardware\ltspice_simulations\simulation_sense_signal_control.asc
+Q1 C64_SENSE_SIGNAL N002 0 0 BC547B
+R1 N002 PICO_SENSE_CONTROL 10k
+V1 PICO_SENSE_CONTROL 0 PULSE(0 3.3 0 0 0 1ms 2ms)
+R2 N001 C64_SENSE_SIGNAL 3.3k
+V2 N001 0 5v
+.model NPN NPN
+.model PNP PNP
+.lib C:\users\thorsten\Documents\LTspiceXVII\lib\cmp\standard.bjt
+.tran 0 30ms 0 30us
+* C64 Intern
+.backanno
+.end

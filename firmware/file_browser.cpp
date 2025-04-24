@@ -38,6 +38,25 @@ FileBrowser::~FileBrowser()
 
 // Public functions
 
+bool FileBrowser::CheckFileExtension(const char *ext)
+{
+    char *current_filename = dir_entrys[dir_entrys_pos];
+
+    size_t str_len_filename = strlen(current_filename);
+    size_t str_len_ext = strlen(ext);
+
+    if (str_len_filename >= str_len_ext)
+    {
+        // Check if the file extension matches
+        if (strcasecmp(current_filename + (str_len_filename - str_len_ext), ext) == 0)
+        {
+            return true; // File extension matches
+        }
+    }
+
+    return false;
+}
+
 void FileBrowser::DrawPage()
 {
     if(ReadDirEntrys() == 0)

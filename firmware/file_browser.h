@@ -35,6 +35,7 @@ public:
     
     char* GetCurrentPath() { return current_path; }
     char* GetCurrentFile() { return dir_entrys[dir_entrys_pos]; }
+    bool CheckFileExtension(const char* ext);
 
     void DrawPage();
     void Up();
