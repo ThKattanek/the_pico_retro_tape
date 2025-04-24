@@ -240,11 +240,13 @@ void C1530Class::update()
     if(motor_new_state == true && motor_old_state == false)
     {
         motor_state = true;
+        printf("Motor is ON\n");
     }
 
     if(motor_new_state == false && motor_old_state == true)
     {
         motor_state = false;
+        printf("Motor is OFF\n");
     }
     motor_old_state = motor_new_state;
 }
@@ -481,7 +483,7 @@ void C1530Class::fill_send_buffer_from_file()
 
         buffer1_is_ready = true;
         buffer0_is_ready = false;
-        //sleep_us(1);
+        sleep_us(1);
     }
 
     if(send_buffer_read_pos == 128 && !buffer0_is_ready)
@@ -504,7 +506,7 @@ void C1530Class::fill_send_buffer_from_file()
 
         buffer0_is_ready = true;
         buffer1_is_ready = false;
-        //sleep_us(1);
+        sleep_us(1);
     }
         break;
 
@@ -596,7 +598,7 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 send_byte = countdown_sequence--;
                 send_byte |= 0x80;
                 conv_byte_to_pulses(send_byte, one_byte_pulse_buffer);
-                printf("Countdown: %02X\n", send_byte);
+                //printf("Countdown: %02X\n", send_byte);
             }
 
             pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
@@ -617,7 +619,7 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 // fill the buffer with the next pulse for the next byte
                 send_byte = ((uint8_t*)&kernal_header_block)[kernal_header_block_pos++];
                 conv_byte_to_pulses(send_byte, one_byte_pulse_buffer);
-                printf("Header_Data: %02X\n", send_byte);
+                //printf("Header_Data: %02X\n", send_byte);
             }
 
             pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
@@ -658,7 +660,7 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 // fill the buffer with the next pulse for the next byte
                 send_byte = countdown_sequence--;
                 conv_byte_to_pulses(send_byte , one_byte_pulse_buffer);
-                printf("Countdown: %02X\n", send_byte);
+                //printf("Countdown: %02X\n", send_byte);
             }
 
             pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
@@ -679,7 +681,7 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 // fill the buffer with the next pulse for the next byte
                 send_byte = ((uint8_t*)&kernal_header_block)[kernal_header_block_pos++];
                 conv_byte_to_pulses(send_byte, one_byte_pulse_buffer);
-                printf("Header_Data: %02X\n", send_byte);
+                //printf("Header_Data: %02X\n", send_byte);
             }
 
             pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
@@ -712,7 +714,7 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 send_byte = countdown_sequence--;
                 send_byte |= 0x80;
                 conv_byte_to_pulses(send_byte, one_byte_pulse_buffer);
-                printf("Countdown: %02X\n", send_byte);
+                //printf("Countdown: %02X\n", send_byte);
             }
 
             pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
@@ -736,7 +738,7 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 {
                     checksum ^= send_byte;
                     conv_byte_to_pulses(send_byte , one_byte_pulse_buffer);
-                    printf("Prg_Data: %02X\n", send_byte);
+                    //printf("Prg_Data: %02X\n", send_byte);
                     prg_send_pos++;
                 }
                 else
@@ -753,7 +755,7 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 if(prg_send_pos == prg_size)
                 {
                     conv_byte_to_pulses(checksum , one_byte_pulse_buffer);
-                    printf("CRC: %02X\n", checksum);
+                    //printf("CRC: %02X\n", checksum);
                     prg_send_pos = 0;
                     prg_send_state++;
                 }
@@ -797,7 +799,7 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 // fill the buffer with the next pulse for the next byte
                 send_byte = countdown_sequence--;
                 conv_byte_to_pulses(send_byte , one_byte_pulse_buffer);
-                printf("Countdown: %02X\n", send_byte);
+                //printf("Countdown: %02X\n", send_byte);
             }
 
             pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
@@ -821,7 +823,7 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 {
                     checksum ^= send_byte;
                     conv_byte_to_pulses(send_byte , one_byte_pulse_buffer);
-                    printf("Prg_Data: %02X\n", send_byte);
+                    //printf("Prg_Data: %02X\n", send_byte);
                     prg_send_pos++;
                 }
                 else
@@ -838,7 +840,7 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 if(prg_send_pos == prg_size)
                 {
                     conv_byte_to_pulses(checksum , one_byte_pulse_buffer);
-                    printf("CRC: %02X\n", checksum);
+                    //printf("CRC: %02X\n", checksum);
                     prg_send_pos = 0;
                     prg_send_state++;
                 }
@@ -851,7 +853,7 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
             {
                 f_lseek(&file, 2); // Set file position to the start of the tape data
                 checksum = 0;
-                prg_send_state=100;
+                prg_send_state++;
             }   
             break;
         case 18:
