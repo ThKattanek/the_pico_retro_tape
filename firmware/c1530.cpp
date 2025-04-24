@@ -423,7 +423,7 @@ void C1530Class::fill_send_buffer_from_file()
 
         buffer1_is_ready = true;
         buffer0_is_ready = false;
-        sleep_us(1);
+        //sleep_us(1);
     }
 
     if(send_buffer_read_pos == 128 && !buffer0_is_ready)
@@ -449,7 +449,7 @@ void C1530Class::fill_send_buffer_from_file()
 
         buffer0_is_ready = true;
         buffer1_is_ready = false;
-        sleep_us(1);
+        //sleep_us(1);
     }
         break;
     
@@ -481,7 +481,7 @@ void C1530Class::fill_send_buffer_from_file()
 
         buffer1_is_ready = true;
         buffer0_is_ready = false;
-        sleep_us(1);
+        //sleep_us(1);
     }
 
     if(send_buffer_read_pos == 128 && !buffer0_is_ready)
@@ -504,7 +504,7 @@ void C1530Class::fill_send_buffer_from_file()
 
         buffer0_is_ready = true;
         buffer1_is_ready = false;
-        sleep_us(1);
+        //sleep_us(1);
     }
         break;
 
