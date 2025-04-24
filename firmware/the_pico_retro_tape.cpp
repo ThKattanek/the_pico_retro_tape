@@ -104,7 +104,7 @@ int main()
     {
         CheckKeys();
         // sendbuffer fill with new data
-        if(!c1530.is_tap_end())
+        //if(!c1530.is_tap_end())
             c1530.update();
     }
 }

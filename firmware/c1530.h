@@ -13,13 +13,33 @@
 #ifndef C1530_CLASS_H
 #define C1530_CLASS_H
 
-#define SHORT_PULSE     176     // 176µs
-#define MEDIUM_PULSE    256     // 256µs
-#define LONG_PULSE      336     // 336µs 
+//#define SHORT_PULSE     176     // 176µs
+//#define MEDIUM_PULSE    256     // 256µs
+//#define LONG_PULSE      336     // 336µs 
+
+// TAP Pulse Lengths for send to C64
+// Cycles per second (PAL): 985248
+// Cycles per second (NTSC): 1022727
+#define SHORT_PULSE 360
+#define MEDIUM_PULSE 524
+#define LONG_PULSE 687
 
 enum IMAGE_TYPE {TAP, T64, PRG};
 enum IMAGE_SOURCE {SDCARD, MEMORY};
 
+struct KERNAL_HEADER_BLOCK    // C64 Kernal Header TAP Block
+{
+    uint8_t header_type;
+    uint8_t start_address_low;
+    uint8_t start_address_high;
+    uint8_t end_address_low;
+    uint8_t end_address_high;
+    char filename_dispayed[16];
+    char filename_not_displayed[171];
+    uint8_t crc_checksum;
+};
+
+/*
 struct C64_HEADER
 {
     uint8_t HeaderType;
@@ -30,6 +50,7 @@ struct C64_HEADER
     uint8_t Filename1[16];  // displayed in the FOUND message
     uint8_t Filename2[171]; // not displayed in the FOUND message
 };
+*/
 
 struct TAPHeader {
     char     magic_id[12];    // "C64-TAPE-RAW"
@@ -102,6 +123,8 @@ public:
 private:
     int32_t get_next_tap_us_pulse();
     int32_t get_next_tap_us_pulse_from_file();
+    int32_t get_next_prg_us_pulse_from_file();
+    void conv_byte_to_pulses(uint32_t byte, uint32_t *pulses);
     void fill_send_buffer_from_memory();
     void fill_send_buffer_from_file();
 
@@ -122,6 +145,19 @@ private:
     int image_source;
     int image_type;
     bool is_tape_insert;
+
+    FSIZE_t prg_size;
+    int prg_send_pos;
+    int prg_send_state;
+    int sync_pulse_counter;
+    uint8_t countdown_sequence;
+    uint8_t checksum;
+
+    uint32_t one_byte_pulse_buffer[20]; // 20 Pulses für 10 Bit = 1 Byte
+    uint8_t one_byte_pulse_buffer_pos;  // if == 0 the buffer is empty and create a new one
+
+    KERNAL_HEADER_BLOCK kernal_header_block;
+    int kernal_header_block_pos;
 
     FIL file;
     TAPHeader tap_header;
