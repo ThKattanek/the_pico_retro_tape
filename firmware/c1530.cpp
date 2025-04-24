@@ -22,6 +22,7 @@
 #include "./c1530.h"
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 
 bool timer_callback_send_data(__unused struct repeating_timer *t) 
 {
@@ -173,9 +174,6 @@ bool C1530Class::open_prg_image(char* filename)
         f_lseek(&file, 2);
 
         uint16_t temp_address = (kernal_header_block.start_address_low | (kernal_header_block.start_address_high << 8));
-        //if (temp_address > 0)
-        //    temp_address -= 1;
-
         uint16_t end_adress = static_cast<uint16_t>(temp_address);
         end_adress += static_cast<uint16_t>(prg_size);
         kernal_header_block.end_address_low = static_cast<uint8_t>(end_adress & 0x00FF);
@@ -185,11 +183,22 @@ bool C1530Class::open_prg_image(char* filename)
         memset(kernal_header_block.filename_dispayed, 0x20, sizeof(kernal_header_block.filename_dispayed));
         memset(kernal_header_block.filename_not_displayed, 0x20, sizeof(kernal_header_block.filename_not_displayed));
 
-        const char *filename_displayed = "C64-TAP-TOOL";
-        const char *filename_not_displayed = "";
+        // Extract the filename from the full path and convert to uppercase
+        const char* base_filename = strrchr(filename, '/');
+        base_filename = (base_filename != nullptr) ? base_filename + 1 : filename;
 
-        strncpy(kernal_header_block.filename_dispayed, filename_displayed, strlen(filename_displayed));
-        strncpy(kernal_header_block.filename_not_displayed, filename_not_displayed, strlen(filename_not_displayed));
+        // Remove the ".prg" extension if present
+        char temp_filename[sizeof(kernal_header_block.filename_dispayed) + 1] = {0};
+        strncpy(temp_filename, base_filename, sizeof(temp_filename) - 1);
+        char* dot_position = strrchr(temp_filename, '.');
+        if (dot_position && strcmp(dot_position, ".prg") == 0) {
+            *dot_position = '\0'; // Remove the extension
+        }
+
+        // Copy the modified filename to the Kernal Header and convert to uppercase
+        for (size_t i = 0; i < sizeof(kernal_header_block.filename_dispayed) && temp_filename[i] != '\0'; i++) {
+            kernal_header_block.filename_dispayed[i] = toupper(temp_filename[i]);
+        }
 
         // Calculate checksum
         checksum = 0;
