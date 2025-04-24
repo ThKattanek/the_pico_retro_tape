@@ -1,7 +1,7 @@
 C64 TAP einbinden das es 100% aus dem Speicher läuft                         [x]
     - Motor Steuerung                                                        [x]
 C64 TAP Record                                                               [ ]
-C64 PRG senden, also alle Banddaten müssen erzeugt werden ins Kernal Format  [ ]
+C64 PRG senden, also alle Banddaten müssen erzeugt werden ins Kernal Format  [x]
 C64 PRG mit Schnelllader senden                                              [ ]
 C64 PRG vor dem senden komprimieren                                          [ ]
 C64 T64 senden (ähnlich PRG)                                                 [ ]
