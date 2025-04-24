@@ -398,12 +398,6 @@ void C1530Class::fill_send_buffer_from_file()
     {
     case IMAGE_TYPE::TAP:
     // TAP-File
-    if(((buffer0_is_ready && send_buffer_read_pos == 128) || (buffer1_is_ready && send_buffer_read_pos ==  0)) && tap_image_is_end)
-    {
-        stop();
-        return;
-    }
-
     if(send_buffer_read_pos == 0 && !buffer1_is_ready)
     {
         // Puffer 1 füllen
@@ -412,12 +406,7 @@ void C1530Class::fill_send_buffer_from_file()
             int32_t pulse = get_next_tap_us_pulse_from_file();
             if(tap_image_pos >= tap_header.data_length)
             {
-                //stop();
-                //while(i<256)
-                    //send_buffer[i++] = 0;
                 pulse = 0;
-                //tap_image_is_end = true;
-                //break;
             }
                 send_buffer[i+0] = pulse;
                 send_buffer[i+1] = pulse;
@@ -436,12 +425,7 @@ void C1530Class::fill_send_buffer_from_file()
             int32_t pulse = get_next_tap_us_pulse_from_file();
             if(tap_image_pos >= tap_header.data_length)
             {
-                //stop();
-                //while(i<256)
-                    //send_buffer[i++] = 0;
-                    pulse = 0;
-                    //tap_image_is_end = true;
-                    //break;
+                pulse = 0;
             }
             
             send_buffer[i+0] = pulse;
@@ -456,34 +440,20 @@ void C1530Class::fill_send_buffer_from_file()
         break;
     
     case IMAGE_TYPE::PRG:
-    // PRG-File
-    if(((buffer0_is_ready && send_buffer_read_pos == 128) || (buffer1_is_ready && send_buffer_read_pos ==  0)) && tap_image_is_end)
-    {
-        stop();
-        return;
-    }
-    
+    // PRG-File    
     if(send_buffer_read_pos == 0 && !buffer1_is_ready)
     {
         // Puffer 1 füllen
         for(int i=128; i<256; i+=2)
         {
             int32_t pulse = get_next_prg_us_pulse_from_file();
-            if(pulse == 0)
-            {
-                while(i<256)
-                    send_buffer[i++] = 0;
-                tap_image_is_end = true;
-                break;
-            }
-            
             send_buffer[i+0] = pulse;
             send_buffer[i+1] = pulse;
         }
 
         buffer1_is_ready = true;
         buffer0_is_ready = false;
-        sleep_us(1);
+        //sleep_us(1);
     }
 
     if(send_buffer_read_pos == 128 && !buffer0_is_ready)
@@ -492,21 +462,13 @@ void C1530Class::fill_send_buffer_from_file()
         for(int i=0; i<128; i+=2)
         {
             int32_t pulse = get_next_prg_us_pulse_from_file();
-            if(pulse == 0)
-            {
-                while(i<128)
-                    send_buffer[i++] = 0;
-                tap_image_is_end = true;
-                break;
-            }
-
             send_buffer[i+0] = pulse;
             send_buffer[i+1] = pulse;
         }
 
         buffer0_is_ready = true;
         buffer1_is_ready = false;
-        sleep_us(1);
+        //sleep_us(1);
     }
         break;
 
@@ -598,7 +560,6 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 send_byte = countdown_sequence--;
                 send_byte |= 0x80;
                 conv_byte_to_pulses(send_byte, one_byte_pulse_buffer);
-                //printf("Countdown: %02X\n", send_byte);
             }
 
             pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
@@ -619,7 +580,6 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 // fill the buffer with the next pulse for the next byte
                 send_byte = ((uint8_t*)&kernal_header_block)[kernal_header_block_pos++];
                 conv_byte_to_pulses(send_byte, one_byte_pulse_buffer);
-                //printf("Header_Data: %02X\n", send_byte);
             }
 
             pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
@@ -660,7 +620,6 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 // fill the buffer with the next pulse for the next byte
                 send_byte = countdown_sequence--;
                 conv_byte_to_pulses(send_byte , one_byte_pulse_buffer);
-                //printf("Countdown: %02X\n", send_byte);
             }
 
             pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
@@ -681,7 +640,6 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 // fill the buffer with the next pulse for the next byte
                 send_byte = ((uint8_t*)&kernal_header_block)[kernal_header_block_pos++];
                 conv_byte_to_pulses(send_byte, one_byte_pulse_buffer);
-                //printf("Header_Data: %02X\n", send_byte);
             }
 
             pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
@@ -714,7 +672,6 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 send_byte = countdown_sequence--;
                 send_byte |= 0x80;
                 conv_byte_to_pulses(send_byte, one_byte_pulse_buffer);
-                //printf("Countdown: %02X\n", send_byte);
             }
 
             pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
@@ -738,7 +695,6 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 {
                     checksum ^= send_byte;
                     conv_byte_to_pulses(send_byte , one_byte_pulse_buffer);
-                    //printf("Prg_Data: %02X\n", send_byte);
                     prg_send_pos++;
                 }
                 else
@@ -755,7 +711,6 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 if(prg_send_pos == prg_size)
                 {
                     conv_byte_to_pulses(checksum , one_byte_pulse_buffer);
-                    //printf("CRC: %02X\n", checksum);
                     prg_send_pos = 0;
                     prg_send_state++;
                 }
@@ -799,7 +754,6 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 // fill the buffer with the next pulse for the next byte
                 send_byte = countdown_sequence--;
                 conv_byte_to_pulses(send_byte , one_byte_pulse_buffer);
-                //printf("Countdown: %02X\n", send_byte);
             }
 
             pulse = one_byte_pulse_buffer[one_byte_pulse_buffer_pos++];
@@ -823,7 +777,6 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 {
                     checksum ^= send_byte;
                     conv_byte_to_pulses(send_byte , one_byte_pulse_buffer);
-                    //printf("Prg_Data: %02X\n", send_byte);
                     prg_send_pos++;
                 }
                 else
@@ -840,7 +793,6 @@ int32_t C1530Class::get_next_prg_us_pulse_from_file()
                 if(prg_send_pos == prg_size)
                 {
                     conv_byte_to_pulses(checksum , one_byte_pulse_buffer);
-                    //printf("CRC: %02X\n", checksum);
                     prg_send_pos = 0;
                     prg_send_state++;
                 }
